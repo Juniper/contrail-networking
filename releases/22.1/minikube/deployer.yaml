@@ -59,18 +59,24 @@ kind: ServiceAccount
 metadata:
   name: contrail-deploy-serviceaccount
   namespace: contrail-deploy
+imagePullSecrets:
+- name: registrypullsecret
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: contrail-system-serviceaccount
   namespace: contrail-system
+imagePullSecrets:
+- name: registrypullsecret
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: contrail-serviceaccount
   namespace: contrail
+imagePullSecrets:
+- name: registrypullsecret
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -162,8 +168,6 @@ spec:
       labels:
         app: contrail-k8s-deployer
     spec:
-      imagePullSecrets:
-        - name: registrypullsecret
       containers:
       - command:
         - sh
@@ -198,8 +202,6 @@ data:
       namespace: contrail-system
     spec:
       common:
-        imagePullSecrets:
-          - name: registrypullsecret
         containers:
         - image: hub.juniper.net/cn2/contrail-k8s-apiserver:22.1.0.93
           name: contrail-k8s-apiserver
@@ -214,8 +216,6 @@ data:
       namespace: contrail-system
     spec:
       common:
-        imagePullSecrets:
-          - name: registrypullsecret
         containers:
         - image: hub.juniper.net/cn2/contrail-k8s-controller:22.1.0.93
           name: contrail-k8s-controller
@@ -230,8 +230,6 @@ data:
       namespace: contrail
     spec:
       common:
-        imagePullSecrets:
-          - name: registrypullsecret
         containers:
         - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.1.0.93
           name: contrail-k8s-kubemanager
@@ -245,8 +243,6 @@ data:
       namespace: contrail
     spec:
       common:
-        imagePullSecrets:
-          - name: registrypullsecret
         containers:
         - image: hub.juniper.net/cn2/contrail-control:22.1.0.93
           name: contrail-control
@@ -265,8 +261,6 @@ data:
       namespace: contrail
     spec:
       common:
-        imagePullSecrets:
-          - name: registrypullsecret
         containers:
         - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
           name: contrail-vrouter-agent
@@ -296,8 +290,6 @@ spec:
   backoffLimit: 4
   template:
     spec:
-      imagePullSecrets:
-        - name: registrypullsecret
       containers:
       - command:
         - sh
