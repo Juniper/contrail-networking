@@ -51,7 +51,8 @@ minikube version
   "auth":“S_______RadVc="}}}!
 
 ```
-     Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
+
+Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
   
   This will generate your auth token in the auth.json file. See the token with the command `more ~/.config/containers/auth.json`
  >
@@ -83,7 +84,7 @@ cd manifests
 minikube start --driver hyperkit --container-runtime cri-o --memory 7g --cni deployer.yaml --kubernetes-version stable –force
 ```
 
-  If you intend to later use Lens with Prometheus, Grafana and such, included in the option Contrail Analytics package. Please give minikube 7g of memory (or more if deploying Influx and Emissary Ingress also in the analytics helm chart package), but 5g is fine in general.
+  If you intend to later use Lens with Prometheus, Grafana and such, included in the optional [CN2 Analytics](https://support.juniper.net/support/downloads/?p=contrail-networking) package, then please give minikube 7g of memory (or more if deploying Influx and Emissary Ingress also in the analytics helm chart package), but 5g is fine in general.
 
 6. After the containers have been pulled down and started we can look at the container images running in the cluster. 
 >
@@ -95,7 +96,7 @@ contrail-deploy      contrail-k8s-deployer-6c5bcd444f-2ntrq                   1/
 contrail-system      contrail-k8s-apiserver-cdbb5b9bd-ftw42                   1/1     Running            0          38m
 contrail-system      contrail-k8s-controller-76fdd87f4-vn5w7                  1/1     Running            0          38m
 contrail             contrail-control-0                                       2/2     Running            0          38m
-contrail             contrail-k8s-kubemanager-54b58947c4-wwcw6                1/1     Running            2          38m
+contrail             contrail-k8s-kubemanager-54b58947c4-wwcw6                1/1     Running            0          38m
 contrail             contrail-vrouter-masters-pvlmb                           3/3     Running            0          38m
 kube-system          coredns-74ff55c5b-cr7ps                                  1/1     Running            0          39m 
 kube-system          etcd-minikube                                            1/1     Running            0          39m
@@ -117,9 +118,9 @@ kubectl get pods -A
 NAMESPACE         NAME                                       READY   STATUS    RESTARTS   AGE
 contrail-deploy   contrail-k8s-deployer-6c5bcd444f-h96lv     1/1     Running   0          65m
 contrail-system   contrail-k8s-apiserver-7596bcffbc-kc9cb    1/1     Running   0          65m
-contrail-system   contrail-k8s-controller-99b8ff694-phv5p    1/1     Running   2          64m
+contrail-system   contrail-k8s-controller-99b8ff694-phv5p    1/1     Running   0          64m
 contrail          contrail-control-0                         2/2     Running   0          64m
-contrail          contrail-k8s-kubemanager-ccc4dcd66-f4nxx   1/1     Running   1          64m
+contrail          contrail-k8s-kubemanager-ccc4dcd66-f4nxx   1/1     Running   0          64m
 contrail          contrail-vrouter-masters-485r9             3/3     Running   0          64m
 kube-system       coredns-558bd4d5db-2c6n7                   1/1     Running   0          65m
 kube-system       etcd-minikube                              1/1     Running   0          65m
@@ -127,7 +128,7 @@ kube-system       kube-apiserver-minikube                    1/1     Running   0
 kube-system       kube-controller-manager-minikube           1/1     Running   0          65m
 kube-system       kube-proxy-xvr46                           1/1     Running   0          65m
 kube-system       kube-scheduler-minikube                    1/1     Running   0          65m
-kube-system       storage-provisioner                        1/1     Running   1          65m
+kube-system       storage-provisioner                        1/1     Running   0          65m
 ```
 
 
