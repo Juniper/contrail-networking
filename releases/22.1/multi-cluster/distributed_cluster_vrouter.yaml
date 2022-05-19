@@ -1,0 +1,136 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contrail-network-config
+  namespace: contrail
+data:
+  networkConfig: |
+    controlDataNetworks:
+    - subnet: 5.5.6.0/24
+      gateway: 5.5.6.254
+    - subnet: 5.5.7.0/24
+      gateway: 5.5.7.254
+    - subnet: 5.5.8.0/24
+      gateway: 5.5.8.254
+    - subnet: 5.5.14.0/24
+      gateway: 5.5.14.254
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-masters
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster
+  common:
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes-7
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: chassis
+              operator: In
+              values:
+              - "5d10s3-node3"
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+  maxUnavailablePercentage: 100%
+
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes-8
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: chassis
+              operator: In
+              values:
+              - "5d10s3-node4"
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+  maxUnavailablePercentage: 100%
+---
+
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes-14
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: chassis
+              operator: In
+              values:
+              - "5d10s11-node2"
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+  maxUnavailablePercentage: 100%
+

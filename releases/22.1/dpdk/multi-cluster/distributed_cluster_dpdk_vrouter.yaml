@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contrail-network-config
+  namespace: contrail
+data:
+  networkConfig: |
+    controlDataNetworks:
+    - subnet: 5.5.5.0/24
+      gateway: 5.5.5.254
+    - subnet: 5.5.4.0/24
+      gateway: 5.5.4.254
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-masters
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster-1
+  common:
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes-1
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster-1
+  agent:
+    virtualHostInterface:
+      physicalInterface: bond0
+      gateway: 5.5.5.254
+  agentModeType: dpdk
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: chassis
+              operator: In
+              values:
+              - "dpdk-subnet-1"
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.1.0.93
+      name: contrail-vrouter-agent-dpdk
+      resources:
+        limits:
+          hugepages-2Mi: 3Gi
+        requests:
+          memory: 3Gi
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.1.0.93
+      name: contrail-vrouter-kernel-init-dpdk
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+  dpdk:
+    cpuCoreMask: 2,3
+    dpdkCommandAdditionalArgs: --yield_option 0
+    dpdkCtrlThreadMask: 4,5
+    dpdkUioDriver: vfio-pci
+    hugePages: "8192"
+    hugePagesDir: /dev/hugepages
+    serviceCoreMask: 4,5
+  maxUnavailablePercentage: 100%
+---
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes-2
+  namespace: contrail
+spec:
+  clusterName: distributed-cluster-1
+  agent:
+    virtualHostInterface:
+      physicalInterface: bond0
+      gateway: 5.5.4.254
+  agentModeType: dpdk
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: chassis
+              operator: In
+              values:
+              - "dpdk-subnet-2"
+    containers:
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.1.0.93
+      name: contrail-vrouter-agent
+    - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.1.0.93
+      name: contrail-vrouter-agent-dpdk
+      resources:
+        limits:
+          hugepages-2Mi: 3Gi
+        requests:
+          memory: 3Gi
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-watcher
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.1.0.93
+      name: contrail-vrouter-kernel-init-dpdk
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.1.0.93
+      name: contrail-cni-init
+  dpdk:
+    cpuCoreMask: 2,3
+    dpdkCommandAdditionalArgs: --yield_option 0
+    dpdkCtrlThreadMask: 4,5
+    dpdkUioDriver: vfio-pci
+    hugePages: "8192"
+    hugePagesDir: /dev/hugepages
+    serviceCoreMask: 4,5
+  maxUnavailablePercentage: 100%
