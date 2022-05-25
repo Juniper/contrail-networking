@@ -43,7 +43,7 @@ Upon successful completion you will see the k8slens/cn2-ui extension listed unde
 
 Even if you already have Prometheus installed into a Kubernetes cluster, this will add a new instance in a Contrail namespace with just the right settings that the Contrail Lens extension will work automatically without any extra configuration tweaks. However, for best results, we recommend installing using this method into a fresh cluster without other Prometheus instances, and certainly none that Lens is configured to use.
 
-1. To install Prometheus into the cluster, most easily you’ll need helm on your local system. On Mac OS, you can install helm with:
+1. Installing Prometheus into the cluster, most easily you’ll need helm on your local system. On Mac OS, you can install helm with:
 >
 ```
 brew install helm
