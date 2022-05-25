@@ -55,9 +55,11 @@ And if you have already installed helm, then it's a good idea to update:
 brew upgrade helm
 ```
 
-2. [Download](https://support.juniper.net/support/downloads/?p=contrail-networking) and install the Contrail analytics "contrail-analytics*.tgz" package and install it in helm. 
+2. Download the values.yaml and image-pull-secret-values.yaml files that will be used for the leaner analytics package. The values.yaml manifest instructs help to skip installing some of the analytics components that are not required for this minikube deployment. 
 
 👉 The full analytics package can be installed following the [official Juniper documentation](https://www.juniper.net/documentation/us/en/software/cn-cloud-native22/cn-cloud-native-k8s-install-and-lcm/cn-cloud-native-upstream-install-and-lcm/topics/task/cn-cloud-native-k8s-install-analytics.html). Herein, we will turn off influxDB and Emissary Ingress. 
+
+4. [Download](https://support.juniper.net/support/downloads/?p=contrail-networking) and install the Contrail analytics "contrail-analytics*.tgz" package and install it in helm. 
 >
 ```
 helm install analytics contrail-analytics-22.1.0.93.tgz -n contrail-analytics --timeout=8000s -f values.yaml -f image-pull-secret-values.yaml --debug
