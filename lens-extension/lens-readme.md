@@ -49,7 +49,7 @@ Even if you already have Prometheus installed into a Kubernetes cluster, this wi
 brew install helm
 ```
 
-And if you have already installed it, then it's a good idea to update it with: 
+And if you have already installed helm, then it's a good idea to update: 
 >
 ```
 brew upgrade helm
