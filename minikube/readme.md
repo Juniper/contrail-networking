@@ -80,7 +80,6 @@ Open the file named auth-encoded.txt. Copy this string into the deployer.yaml fi
 5. Deploying CN2 to your minikube cluster. First change directory into your downloaded manifests/ folder, then start minikube. If you previously have a minikube running, delete it first with `minikube delete`
 >
 ```
-cd manifests
 minikube start --driver hyperkit --container-runtime cri-o --memory 7g --cni deployer.yaml --kubernetes-version stable –force
 ```
 
