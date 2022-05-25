@@ -1,0 +1,399 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-deploy
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-analytics
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-system
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-deploy
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-analytics
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+imagePullSecrets:
+- name: registrypullsecret
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+imagePullSecrets:
+- name: registrypullsecret
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: contrail-serviceaccount
+  namespace: contrail
+imagePullSecrets:
+- name: registrypullsecret
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-deploy-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-system-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-deploy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-deploy-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-serviceaccount
+  namespace: contrail
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-system-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-system-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+#
+# contrail-network-config configMap is necessary when more than one interface
+# is available for control/data traffic. Configure one or more subnets/gateways
+# for control/data traffic. In the example below, change the subnet and gateway
+# values for your specific topology.
+#
+# Uncomment below this line to include contrail-network-config configMap
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: contrail-network-config
+#   namespace: contrail
+# data:
+#   networkConfig: |
+#     controlDataNetworks:
+#     - subnet: 10.10.10.0/24
+#       gateway: 10.10.10.254
+#     - subnet: 10.10.15.0/24
+#       gateway: 10.10.15.254
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contrail-k8s-deployer
+  namespace: contrail-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contrail-k8s-deployer
+  template:
+    metadata:
+      labels:
+        app: contrail-k8s-deployer
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - /manager --metrics-addr 127.0.0.1:8081
+        image: hub.juniper.net/cn2/contrail-k8s-deployer:22.2.0.1
+        name: contrail-k8s-deployer
+      hostNetwork: true
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - kustomize build /crd | kubectl apply -f -
+        image: hub.juniper.net/cn2/contrail-k8s-crdloader:22.2.0.1
+        name: contrail-k8s-crdloader
+      - command:
+        - sh
+        - -c
+        - kubectl delete -n contrail-system secret etcd-certs-secret; kubectl create -n contrail-system secret generic etcd-certs-secret --from-file=ca.crt=/var/keys/etcd/ca.crt  --from-file=tls.crt=/var/keys/apiserver-etcd-client.crt  --from-file=tls.key=/var/keys/apiserver-etcd-client.key
+        image: hub.juniper.net/cn2/contrail-k8s-crdloader:22.2.0.1
+        name: contrail-k8s-createetcdsecret
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /var/keys/etcd/ca.crt
+          name: ca-crt
+        - mountPath: /var/keys/apiserver-etcd-client.crt
+          name: apiserver-etcd-client-crt
+        - mountPath: /var/keys/apiserver-etcd-client.key
+          name: apiserver-etcd-client-key
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsUser: 1000
+      serviceAccountName: contrail-deploy-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/pki/etcd/ca.crt
+          type: File
+        name: ca-crt
+      - hostPath:
+          path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+          type: File
+        name: apiserver-etcd-client-crt
+      - hostPath:
+          path: /etc/kubernetes/pki/apiserver-etcd-client.key
+          type: File
+        name: apiserver-etcd-client-key
+---
+apiVersion: v1
+data:
+  contrail-cr.yaml: |
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: ApiServer
+    metadata:
+      name: contrail-k8s-apiserver
+      namespace: contrail-system
+    spec:
+      common:
+        containers:
+        - image: hub.juniper.net/cn2/contrail-k8s-apiserver:22.2.0.1
+          name: contrail-k8s-apiserver
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        serviceAccountName: contrail-system-serviceaccount
+    ---
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: Controller
+    metadata:
+      name: contrail-k8s-controller
+      namespace: contrail-system
+    spec:
+      common:
+        containers:
+        - image: hub.juniper.net/cn2/contrail-k8s-controller:22.2.0.1
+          name: contrail-k8s-controller
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        serviceAccountName: contrail-system-serviceaccount
+    ---
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: Kubemanager
+    metadata:
+      name: contrail-k8s-kubemanager
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.2.0.1
+          name: contrail-k8s-kubemanager
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+    ---
+    apiVersion: controlplane.juniper.net/v1alpha1
+    kind: Control
+    metadata:
+      name: contrail-control
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: hub.juniper.net/cn2/contrail-control:22.2.0.1
+          name: contrail-control
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+          name: contrail-control-telemetry-exporter
+        initContainers:
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-init
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-masters
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+          name: contrail-vrouter-agent
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-watcher
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-init
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+          name: contrail-cni-init
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-nodes
+      namespace: contrail
+    spec:
+      common:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - ""
+        containers:
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+          name: contrail-vrouter-agent
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-watcher
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-init
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+          name: contrail-cni-init
+      maxUnavailablePercentage: 100%
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: contrail-cr
+  namespace: contrail
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: apply-contrail
+  namespace: contrail
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - until kubectl wait --for condition=established --timeout=60s crd/apiservers.configplane.juniper.net; do echo 'waiting for apiserver crd'; sleep 2; done && until ls /tmp/contrail/contrail-cr.yaml; do sleep 2; echo 'waiting for manifest'; done && kubectl apply -f /tmp/contrail/contrail-cr.yaml && kubectl -n contrail delete job apply-contrail
+        image: hub.juniper.net/cn2/contrail-k8s-applier:22.2.0.1
+        name: applier
+        volumeMounts:
+        - mountPath: /tmp/contrail
+          name: cr-volume
+      hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      restartPolicy: Never
+      serviceAccountName: contrail-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - configMap:
+          name: contrail-cr
+        name: cr-volume
+
