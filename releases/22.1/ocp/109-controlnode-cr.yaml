@@ -1,0 +1,17 @@
+apiVersion: controlplane.juniper.net/v1alpha1
+kind: Control
+metadata:
+  name: contrail-control
+  namespace: contrail
+spec:
+  common:
+    containers:
+    - image: hub.juniper.net/cn2/contrail-control:22.1.0.93
+      name: contrail-control
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.1.0.93
+      name: contrail-control-telemetry-exporter
+    initContainers:
+    - image: hub.juniper.net/cn2/contrail-init:22.1.0.93
+      name: contrail-init
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
