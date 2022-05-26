@@ -212,15 +212,15 @@ spec:
         operator: Exists
       volumes:
       - hostPath:
-          path: /etc/kubernetes/pki/etcd/ca.crt
+          path: /var/lib/minikube/certs/etcd/ca.crt
           type: File
         name: ca-crt
       - hostPath:
-          path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+          path: /var/lib/minikube/certs/apiserver-etcd-client.crt
           type: File
         name: apiserver-etcd-client-crt
       - hostPath:
-          path: /etc/kubernetes/pki/apiserver-etcd-client.key
+          path: /var/lib/minikube/certs/apiserver-etcd-client.key
           type: File
         name: apiserver-etcd-client-key
 ---
@@ -307,6 +307,36 @@ data:
           name: contrail-cni-init
         nodeSelector:
           node-role.kubernetes.io/master: ""
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-nodes
+      namespace: contrail
+    spec:
+      common:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: NotIn
+                  values:
+                  - ""
+        containers:
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+          name: contrail-vrouter-agent
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-watcher
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+          name: contrail-init
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+          name: contrail-cni-init
+      maxUnavailablePercentage: 100%
 kind: ConfigMap
 metadata:
   creationTimestamp: null
