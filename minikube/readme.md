@@ -46,9 +46,7 @@ minikube version
 > 
 ```json5
   
-  {"auths":{"hub.juniper.net":{"username":"SomeUserName",
-  "password":"SomePassWorD123","email":yourid@juniper.net",
-  "auth":“S_______RadVc="}}}
+  {"auths":{"hub.juniper.net":{"username":"SomeUserName","password":"SomePassWorD123","email":"yourid@juniper.net","auth":“S_______RadVc="}}}
 
 ```
 
