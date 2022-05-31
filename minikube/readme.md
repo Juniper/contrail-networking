@@ -46,13 +46,11 @@ minikube version
 > 
 ```json5
   
-  {"auths":{"hub.juniper.net":{"username":"SomeUserName",
-  "password":"SomePassWorD123","email":yourid@juniper.net",
-  "auth":“S_______RadVc="}}}!
+  {"auths":{"hub.juniper.net":{"username":"SomeUserName","password":"SomePassWorD123","email":"yourid@juniper.net","auth":"S_______RadVc="}}}
 
 ```
 
-Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
+Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login hub.juniper.net` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
   
   This will generate your auth token in the auth.json file. See the token with the command `more ~/.config/containers/auth.json`
  >
