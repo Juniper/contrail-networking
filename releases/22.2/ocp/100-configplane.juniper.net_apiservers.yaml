@@ -3505,11 +3505,6 @@ spec:
                 description: Flag to EnableSNAT on a VirtualNetwork by default, used
                   when creating GlobalSystemConfig
                 type: boolean
-              etcdManagedClientCertDisableSetOwner:
-                default: false
-                description: When set to true the controller will not try own secret
-                  with client certificate
-                type: boolean
               etcdManagedClientCertDuration:
                 default: 2170h
                 description: Lifetime of client certificate in hours. Must be longer
@@ -3523,18 +3518,19 @@ spec:
                   Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration
                 pattern: ([0-9]+h)?([0-9]+m)?([0-9]+s)?([0-9]+ms)?([0-9]+us)?([0-9]+µs)?([0-9]+ns)?
                 type: string
-              etcdManagedSecretName:
-                default: contrail-etcd-client
-                description: Secret name which stores client's key, certificate and
-                  CA certificate required for connection to managed etcd
-                maxLength: 253
-                minLength: 1
-                type: string
               etcdSecret:
+                default: contrail-etcd-client
                 description: 'Etcd secret contain certificates required for connection
                   to etcd. Required certificates are: ca.crt - CA, tls.crt - client
                   certificate, tls.key - client key'
+                maxLength: 253
+                minLength: 1
                 type: string
+              etcdSecretDisableSetOwner:
+                default: false
+                description: When set to true the controller will not try own secret
+                  with client certificate
+                type: boolean
               etcdServers:
                 description: Etcd server endpoints
                 items:
