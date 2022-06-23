@@ -1,0 +1,28 @@
+apiVersion: checks.contrail.juniper.net/v1alpha1
+kind: ContrailReadiness
+metadata:
+  name: postflight
+spec:
+  manifestConfigMapName: deployer-yaml
+  tests:
+    - name: contrailresources
+      allowFailure: false
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: contrailresources-check
+            image: hub.juniper.net/cn2/contrail-readiness-checks:22.2.0.1
+            imagePullPolicy: Always
+            command: ["sh", "-c", "/contrailresources"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
