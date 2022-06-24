@@ -14,14 +14,10 @@
 # data:
 #   networkConfig: |
 #     controlDataNetworks:
-#     - subnet: 10.10.10.0/24
-#       gateway: 10.10.10.254
-#     - subnet: 10.10.15.0/24
-#       gateway: 10.10.15.254
-#     - subnet: 10.10.20.0/24
-#       gateway: 10.10.20.254
-#     - subnet: 10.10.30.0/24
-#       gateway: 10.10.30.254
+#     - subnet: 10.16.0.0/24
+#       gateway: 10.16.0.254
+#     - subnet: 10.16.1.0/24
+#       gateway: 10.16.1.254
 ---
 apiVersion: dataplane.juniper.net/v1alpha1
 kind: Vrouter
@@ -32,16 +28,16 @@ spec:
   clusterName: distributed-cluster
   common:
     containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
       name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
       name: contrail-cni-init
     nodeSelector:
       node-role.kubernetes.io/master: ""
@@ -49,112 +45,10 @@ spec:
 apiVersion: dataplane.juniper.net/v1alpha1
 kind: Vrouter
 metadata:
-  name: contrail-vrouter-nodes-7
-  namespace: contrail
-spec:
-  clusterName: distributed-cluster
-  common:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-# Node selector terms will vary in every deployment
-# This is just an example
-          - matchExpressions:
-            - key: chassis
-              operator: In
-              values:
-              - "5d10s3-node3"
-    containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
-      name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
-      name: contrail-vrouter-telemetry-exporter
-    initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
-      name: contrail-cni-init
-  maxUnavailablePercentage: 100%
-
----
-apiVersion: dataplane.juniper.net/v1alpha1
-kind: Vrouter
-metadata:
-  name: contrail-vrouter-nodes-8
-  namespace: contrail
-spec:
-  clusterName: distributed-cluster
-  common:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-# Node selector terms will vary in every deployment
-# This is just an example
-          - matchExpressions:
-            - key: chassis
-              operator: In
-              values:
-              - "5d10s3-node4"
-    containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
-      name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
-      name: contrail-vrouter-telemetry-exporter
-    initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
-      name: contrail-cni-init
-  maxUnavailablePercentage: 100%
----
-
-apiVersion: dataplane.juniper.net/v1alpha1
-kind: Vrouter
-metadata:
-  name: contrail-vrouter-nodes-14
-  namespace: contrail
-spec:
-  clusterName: distributed-cluster
-  common:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-# Node selector terms will vary in every deployment
-# This is just an example
-          - matchExpressions:
-            - key: chassis
-              operator: In
-              values:
-              - "5d10s11-node2"
-    containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
-      name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
-      name: contrail-vrouter-telemetry-exporter
-    initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
-      name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
-      name: contrail-cni-init
-  maxUnavailablePercentage: 100%
----
-apiVersion: dataplane.juniper.net/v1alpha1
-kind: Vrouter
-metadata:
   name: contrail-vrouter-nodes-1
   namespace: contrail
 spec:
-  clusterName: distributed-cluster-1
-  agentModeType: dpdk
+  clusterName: distributed-cluster
   common:
     affinity:
       nodeAffinity:
@@ -163,40 +57,28 @@ spec:
 # Node selector terms will vary in every deployment
 # This is just an example
           - matchExpressions:
-            - key: chassis
-              operator: In
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
               values:
-              - "dpdk-subnet-1"
+              - ""
+            - key: chassis
+              operator: NotIn
+              values:
+              - "dpdk-worker"
     containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
       name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.2.0.1
-      name: contrail-vrouter-agent-dpdk
-      resources:
-        limits:
-          hugepages-2Mi: 3Gi
-        requests:
-          memory: 3Gi
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.2.0.1
-      name: contrail-vrouter-kernel-init-dpdk
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
       name: contrail-cni-init
-  dpdk:
-    cpuCoreMask: 2,3
-    dpdkCommandAdditionalArgs: --yield_option 0
-    dpdkCtrlThreadMask: 4,5
-    dpdkUioDriver: vfio-pci
-    hugePages: "8192"
-    hugePagesDir: /dev/hugepages
-    serviceCoreMask: 4,5
   maxUnavailablePercentage: 100%
+
 ---
 apiVersion: dataplane.juniper.net/v1alpha1
 kind: Vrouter
@@ -217,27 +99,27 @@ spec:
             - key: chassis
               operator: In
               values:
-              - "dpdk-subnet-2"
+              - "dpdk-worker"
     containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
       name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.2.0.93
       name: contrail-vrouter-agent-dpdk
       resources:
         limits:
           hugepages-2Mi: 3Gi
         requests:
           memory: 3Gi
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.2.0.93
       name: contrail-vrouter-kernel-init-dpdk
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
       name: contrail-cni-init
   dpdk:
     cpuCoreMask: 2,3

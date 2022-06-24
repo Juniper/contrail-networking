@@ -1,19 +1,19 @@
 #
-# contrail-network-config configMap is necessary when using VRRP.
-# Configure one or more subnets/gateways for control/data traffic. 
-# In the example below, change the subnet and gateway
+# contrail-network-config configMap is necessary when more than one interface
+# is available for control/data traffic. Configure one or more subnets/gateways
+# for control/data traffic. In the example below, change the subnet and gateway
 # values for your specific topology.
 #
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: contrail-network-config
-  namespace: contrail
-data:
-  networkConfig: |
-    controlDataNetworks:
-    - subnet: 10.10.10.0/24
-      gateway: 10.10.10.254
-    - subnet: 10.10.15.0/24
-      gateway: 10.10.15.254
+# Uncomment below this line to include contrail-network-config configMap
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: contrail-network-config
+#   namespace: contrail
+# data:
+#   networkConfig: |
+#     controlDataNetworks:
+#     - subnet: 10.16.0.0/24
+#       gateway: 10.16.0.254
+#     - subnet: 10.16.1.0/24
+#       gateway: 10.16.1.254

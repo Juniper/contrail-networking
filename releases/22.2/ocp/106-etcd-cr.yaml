@@ -6,10 +6,10 @@ metadata:
 spec:
   common:
     containers:
-    - image: hub.juniper.net/cn2/contrail-etcd:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-etcd:22.2.0.93
       name: contrail-etcd
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-cert-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-cert-init:22.2.0.93
       name: contrail-cert-init
     nodeSelector:
       node-role.kubernetes.io/master: ""

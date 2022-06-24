@@ -78,6 +78,14 @@ metadata:
 imagePullSecrets:
 - name: registrypullsecret
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: contrail-analytics-serviceaccount
+  namespace: contrail-analytics
+imagePullSecrets:
+- name: registrypullsecret
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -152,6 +160,18 @@ subjects:
 - kind: ServiceAccount
   name: contrail-system-serviceaccount
   namespace: contrail-system
+---
+apiVersion: v1
+data:
+  config.yaml: |-
+    log:
+      caller: true
+      level:
+        default: info
+kind: ConfigMap
+metadata:
+  name: contrail-k8s-controller-cm
+  namespace: contrail-system
 #
 # contrail-network-config configMap is necessary when more than one interface
 # is available for control/data traffic. Configure one or more subnets/gateways
@@ -168,10 +188,10 @@ subjects:
 # data:
 #   networkConfig: |
 #     controlDataNetworks:
-#     - subnet: 10.10.10.0/24
-#       gateway: 10.10.10.254
-#     - subnet: 10.10.15.0/24
-#       gateway: 10.10.15.254
+#     - subnet: 10.16.0.0/24
+#       gateway: 10.16.0.254
+#     - subnet: 10.16.1.0/24
+#       gateway: 10.16.1.254
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -193,7 +213,7 @@ spec:
         - sh
         - -c
         - /manager --metrics-addr 127.0.0.1:8081
-        image: hub.juniper.net/cn2/contrail-k8s-deployer:22.2.0.1
+        image: hub.juniper.net/cn2/contrail-k8s-deployer:22.2.0.93
         name: contrail-k8s-deployer
       hostNetwork: true
       initContainers:
@@ -201,7 +221,7 @@ spec:
         - sh
         - -c
         - kustomize build /crd | kubectl apply -f -
-        image: hub.juniper.net/cn2/contrail-k8s-crdloader:22.2.0.1
+        image: hub.juniper.net/cn2/contrail-k8s-crdloader:22.2.0.93
         name: contrail-k8s-crdloader
       - command:
         - /app/deployer/etcd-cert-discover/etcd-cert-discover
@@ -210,7 +230,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: hub.juniper.net/cn2/contrail-k8s-etcd-cert-discover:22.2.0.1
+        image: hub.juniper.net/cn2/contrail-k8s-etcd-cert-discover:22.2.0.93
         name: contrail-k8s-etcd-cert-discover
       nodeSelector:
         node-role.kubernetes.io/master: ""
@@ -236,7 +256,7 @@ data:
     spec:
       common:
         containers:
-        - image: hub.juniper.net/cn2/contrail-k8s-apiserver:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-k8s-apiserver:22.2.0.93
           name: contrail-k8s-apiserver
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -250,11 +270,26 @@ data:
     spec:
       common:
         containers:
-        - image: hub.juniper.net/cn2/contrail-k8s-controller:22.2.0.1
+        - env:
+          - name: LOG_CONFIG_FILE
+            value: /etc/config/cm/config.yaml
+          - name: XDG_CACHE_HOME
+            value: /tmp
+          image: hub.juniper.net/cn2/contrail-k8s-controller:22.2.0.93
           name: contrail-k8s-controller
+          volumeMounts:
+          - mountPath: /etc/config/cm
+            name: config
         nodeSelector:
           node-role.kubernetes.io/master: ""
         serviceAccountName: contrail-system-serviceaccount
+        volumes:
+        - configMap:
+            items:
+            - key: config.yaml
+              path: config.yaml
+            name: contrail-k8s-controller-cm
+          name: config
     ---
     apiVersion: configplane.juniper.net/v1alpha1
     kind: Kubemanager
@@ -264,7 +299,7 @@ data:
     spec:
       common:
         containers:
-        - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.2.0.93
           name: contrail-k8s-kubemanager
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -277,12 +312,12 @@ data:
     spec:
       common:
         containers:
-        - image: hub.juniper.net/cn2/contrail-control:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-control:22.2.0.93
           name: contrail-control
-        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
           name: contrail-control-telemetry-exporter
         initContainers:
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-init
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -295,16 +330,16 @@ data:
     spec:
       common:
         containers:
-        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
           name: contrail-vrouter-agent
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-watcher
-        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-init
-        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
           name: contrail-cni-init
         nodeSelector:
           node-role.kubernetes.io/master: ""
@@ -325,21 +360,21 @@ data:
                   operator: NotIn
                   values:
                   - ""
-                - key: agent-mode
+                - key: chassis
                   operator: NotIn
                   values:
-                  - dpdk
+                  - "dpdk-worker"
         containers:
-        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
           name: contrail-vrouter-agent
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-watcher
-        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-init
-        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
           name: contrail-cni-init
       maxUnavailablePercentage: 100%
     ---
@@ -360,30 +395,30 @@ data:
                   operator: NotIn
                   values:
                   - ""
-                - key: agent-mode
+                - key: chassis
                   operator: In
                   values:
-                  - dpdk
+                  - "dpdk-worker"
         containers:
-        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
           name: contrail-vrouter-agent
-        - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-vrouter-dpdk:22.2.0.93
           name: contrail-vrouter-agent-dpdk
           resources:
             limits:
               hugepages-2Mi: 3Gi
             requests:
               memory: 3Gi
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-watcher
-        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
           name: contrail-init
-        - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-vrouter-kernel-init-dpdk:22.2.0.93
           name: contrail-vrouter-kernel-init-dpdk
-        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+        - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
           name: contrail-cni-init
       dpdk:
         cpuCoreMask: 2,3
@@ -414,7 +449,7 @@ spec:
         - sh
         - -c
         - until kubectl wait --for condition=established --timeout=60s crd/apiservers.configplane.juniper.net; do echo 'waiting for apiserver crd'; sleep 2; done && until ls /tmp/contrail/contrail-cr.yaml; do sleep 2; echo 'waiting for manifest'; done && kubectl apply -f /tmp/contrail/contrail-cr.yaml && kubectl -n contrail delete job apply-contrail
-        image: hub.juniper.net/cn2/contrail-k8s-applier:22.2.0.1
+        image: hub.juniper.net/cn2/contrail-k8s-applier:22.2.0.93
         name: applier
         volumeMounts:
         - mountPath: /tmp/contrail

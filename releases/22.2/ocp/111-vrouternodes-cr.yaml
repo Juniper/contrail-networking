@@ -17,19 +17,15 @@ spec:
               operator: NotIn
               values:
               - ""
-            - key: agent-mode
-              operator: NotIn
-              values:
-              - dpdk
     containers:
-    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-vrouter-agent:22.2.0.93
       name: contrail-vrouter-agent
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-watcher
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-init
-    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-cni-init:22.2.0.93
       name: contrail-cni-init

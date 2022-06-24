@@ -6,12 +6,12 @@ metadata:
 spec:
   common:
     containers:
-    - image: hub.juniper.net/cn2/contrail-control:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-control:22.2.0.93
       name: contrail-control
-    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-telemetry-exporter:22.2.0.93
       name: contrail-control-telemetry-exporter
     initContainers:
-    - image: hub.juniper.net/cn2/contrail-init:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-init:22.2.0.93
       name: contrail-init
     nodeSelector:
       node-role.kubernetes.io/master: ""

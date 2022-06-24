@@ -6,7 +6,7 @@ metadata:
 spec:
   common:
     containers:
-    - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.2.0.1
+    - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:22.2.0.93
       name: contrail-k8s-kubemanager
     nodeSelector:
       node-role.kubernetes.io/master: ""
