@@ -1,0 +1,10 @@
+apiVersion: configplane.juniper.net/v1alpha1
+kind: Kubemanager
+metadata:
+  name: contrail-k8s-kubemanager
+  namespace: contrail
+spec:
+  common:
+    containers:
+    - image: hub.juniper.net/cn2/contrail-k8s-kubemanager:R22.3-9
+      name: contrail-k8s-kubemanager
