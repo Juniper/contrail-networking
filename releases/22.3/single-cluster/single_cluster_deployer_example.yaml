@@ -391,8 +391,6 @@ data:
           xmppAuthEnable: true
         sandesh:
           introspectSslEnable: true
-        virtualHostInterface:
-          physicalInterface: ens3
       agentModeType: dpdk
       common:
         affinity:
