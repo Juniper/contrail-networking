@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contrail-k8s-deployer
+  namespace: contrail-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contrail-k8s-deployer
+  template:
+    metadata:
+      labels:
+        app: contrail-k8s-deployer
+    spec:
+      containers:
+      - command:
+        - /manager
+        - --metrics-addr
+        - 127.0.0.1:8081
+        - --managed-etcd
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:22.3.0.71
+        name: contrail-k8s-deployer
+      initContainers:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: Exists
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+      serviceAccountName: contrail-deploy-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists

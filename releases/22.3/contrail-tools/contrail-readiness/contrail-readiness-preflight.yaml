@@ -1,0 +1,152 @@
+apiVersion: checks.contrail.juniper.net/v1alpha1
+kind: ContrailReadiness
+metadata:
+  name: preflight
+spec:
+  manifestConfigMapName: deployer-yaml
+  tests:
+    - name: kernel
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        restartPolicy: Never
+        containers:
+          - name: kernel-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            imagePullPolicy: Always
+            command: ["/kernel"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: ports
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        restartPolicy: Never
+        containers:
+          - name: ports-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            imagePullPolicy: Always
+            command: ["/ports"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: images
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        restartPolicy: Never
+        containers:
+          - name: images-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            imagePullPolicy: Always
+            command: ["/images"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: dns
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        hostPID: true
+        hostIPC: true
+        restartPolicy: Never
+        containers:
+          - name: dns-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            imagePullPolicy: Always
+            securityContext:
+              privileged: true
+            command: ["/dns"]
+            volumeMounts:
+            - mountPath: /host
+              name: noderoot
+        volumes:
+        - name: noderoot
+          hostPath:
+            path: /
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: resources
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        restartPolicy: Never
+        containers:
+          - name: resources-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            imagePullPolicy: Always
+            command: ["/resources"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: ntp
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        hostPID: true
+        hostIPC: true
+        restartPolicy: Never
+        containers:
+          - name: ntp-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - mountPath: /host
+              name: noderoot
+            imagePullPolicy: Always
+            command: ["/ntp"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+        volumes:
+        - name: noderoot
+          hostPath:
+            path: /
+    - name: secureboot
+      allowFailure: false
+      testPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        hostNetwork: true
+        hostPID: true
+        hostIPC: true
+        restartPolicy: Never
+        containers:
+          - name: secureboot-check
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:22.3.0.71
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - mountPath: /host
+              name: noderoot
+            imagePullPolicy: Always
+            command: ["/secureboot"]
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+        volumes:
+        - name: noderoot
+          hostPath:
+            path: /

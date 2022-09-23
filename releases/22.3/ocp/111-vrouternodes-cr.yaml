@@ -1,0 +1,35 @@
+apiVersion: dataplane.juniper.net/v1alpha1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes
+  namespace: contrail
+spec:
+  agent:
+    default:
+      httpServerPort: 18085
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - ""
+            - key: node-role.kubernetes.io/control-plane
+              operator: NotIn
+              values:
+              - ""
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:22.3.0.71
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:22.3.0.71
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:22.3.0.71
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:22.3.0.71
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:22.3.0.71
+      name: contrail-cni-init
