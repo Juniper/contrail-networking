@@ -16,7 +16,7 @@ This procedure was performed on an Intel-based MacBook Pro but could be used for
 *	Internet connection
 *	[Podman installed](https://podman.io/getting-started/installation)
 *	Download the deployer.yaml from the manifests folder to your local home directory. 
-*	You need hub.juniper.net credentials for CN2. If you do not have credentials, fill out the [free-trial form](https://www.juniper.net/us/en/forms/cn2-free-trial.html) using your company email 📧 to gain access
+*	You need enterprise-hub.juniper.net credentials for CN2. If you do not have credentials, fill out the [free-trial form](https://www.juniper.net/us/en/forms/cn2-free-trial.html) using your company email 📧 to gain access
 
 ## Getting Started 
 
@@ -42,15 +42,15 @@ minikube version
 
 3. The installation of the CNI is driven by the deployer manifest “[deployer.yaml](https://github.com/Juniper/contrail-networking/blob/main/releases/22.1/minikube/deployer.yaml)” This is part of the manifest files in the [minikube folder](https://github.com/Juniper/contrail-networking/tree/main/releases/22.1/minikube) for the release.
   
-4. You must open the deployer.yaml file and replace the 4 instances of `<base64-encoded-credential>` with your dockerconfigjson authentication string to connect to hub.juniper.net so that Kubernetes can download the container images for CN2. Your string will be base64 encoded, but decoded it will look like this:
+4. You must open the deployer.yaml file and replace the 4 instances of `<base64-encoded-credential>` with your dockerconfigjson authentication string to connect to enterprise-hub.juniper.net so that Kubernetes can download the container images for CN2. Your string will be base64 encoded, but decoded it will look like this:
 > 
 ```json5
   
-  {"auths":{"hub.juniper.net":{"username":"SomeUserName","password":"SomePassWorD123","email":"yourid@juniper.net","auth":"S_______RadVc="}}}
+  {"auths":{"enterprise-hub.juniper.net":{"username":"SomeUserName","password":"SomePassWorD123","email":"yourid@juniper.net","auth":"S_______RadVc="}}}
 
 ```
 
-Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login hub.juniper.net` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
+Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login enterprise-hub.juniper.net` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
   
   This will generate your auth token in the auth.json file. See the token with the command `more ~/.config/containers/auth.json`
  >
@@ -58,7 +58,7 @@ Put this string into a new file called auth.txt with no new line at the end. The
   
   {
         "auths": {
-                "hub.juniper.net": {
+                "enterprise-hub.juniper.net": {
                         "auth": "S_______RadVc="
                 }
         }
@@ -72,7 +72,7 @@ Put this string into a new file called auth.txt with no new line at the end. The
   base64 -i auth.txt -o auth-encoded.txt
 ```
   
-Open the file named auth-encoded.txt. Copy this string into the deployer.yaml file to replace each instance of the placeholder `<base64-encoded-credential>`. Assuming this was completed properly, your hub.juniper.net credentials will work and the CN2 container images will download just fine in the next step.
+Open the file named auth-encoded.txt. Copy this string into the deployer.yaml file to replace each instance of the placeholder `<base64-encoded-credential>`. Assuming this was completed properly, your enterprise-hub.juniper.net credentials will work and the CN2 container images will download just fine in the next step.
 
 
 5. Deploying CN2 to your minikube cluster. First change directory into your downloaded manifests/ folder, then start minikube. If you previously have a minikube running, delete it first with `minikube delete`
