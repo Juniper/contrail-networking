@@ -3,12 +3,12 @@ entries:
   cn2-eks:
   - apiVersion: v2
     appVersion: 22.4.0
-    created: "2022-11-18T19:22:54.663434-08:00"
+    created: "2022-11-18T19:32:12.599759-08:00"
     description: A Helm chart for Kubernetes
     digest: 2ddd44de5442173eefea924b1c319bc8e526211156828a271317c6c7daf2859c
     name: cn2-eks
     type: application
     urls:
-    - https://juniper.github.io/contrail-networking/releases/helmcharts/cn2-eks-0.1.0.tgz
+    - https://juniper.github.io/contrail-networking/tree/cn2helm/releases/helmcharts/cn2-eks-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-18T19:22:54.65907-08:00"
+generated: "2022-11-18T19:32:12.59267-08:00"
