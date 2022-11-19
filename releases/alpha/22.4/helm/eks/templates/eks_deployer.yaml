@@ -1,0 +1,432 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-deploy
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-system
+---
+apiVersion: v1
+{{ if .Values.imagePullSecret }}
+imagePullSecrets:
+- name: registrypullsecret
+{{ end }}
+kind: ServiceAccount
+metadata:
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+---
+apiVersion: v1
+{{ if .Values.imagePullSecret }}
+imagePullSecrets:
+- name: registrypullsecret
+{{ end }}
+kind: ServiceAccount
+metadata:
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+---
+apiVersion: v1
+{{ if .Values.imagePullSecret }}
+imagePullSecrets:
+- name: registrypullsecret
+{{ end }}
+kind: ServiceAccount
+metadata:
+  name: contrail-serviceaccount
+  namespace: contrail
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-deploy-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-system-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-deploy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-deploy-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-serviceaccount
+  namespace: contrail
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-system-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-system-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+---
+apiVersion: v1
+data:
+  config.yaml: |-
+    log:
+      caller: true
+      level:
+        default: info
+kind: ConfigMap
+metadata:
+  name: contrail-k8s-controller-cm
+  namespace: contrail-system
+{{ if .Values.imagePullSecret }}
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: {{ .Values.imagePullSecret }}
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-deploy
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: {{ .Values.imagePullSecret }}
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-system
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: {{ .Values.imagePullSecret }}
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail
+type: kubernetes.io/dockerconfigjson
+{{ end }}
+---
+# apiVersion: v1
+# data:
+#   password: YWRtaW4K
+#   username: YWRtaW4K
+# kind: Secret
+# metadata:
+#   name: apstra-plugin-secret
+#   namespace: contrail
+# type: Opaque
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contrail-k8s-deployer
+  namespace: contrail-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contrail-k8s-deployer
+  template:
+    metadata:
+      labels:
+        app: contrail-k8s-deployer
+    spec:
+      containers:
+      - command:
+        - /manager
+        - --metrics-addr
+        - 127.0.0.1:8081
+        image: {{ .Values.repoUrl }}/contrail-k8s-deployer:{{ .Values.manifestBuild }}
+        name: contrail-k8s-deployer
+      hostNetwork: true
+      initContainers:
+      - command:
+        - kubectl
+        - apply
+        - -k
+        - /crd
+        image: {{ .Values.repoUrl }}/contrail-k8s-crdloader:{{ .Values.manifestBuild }}
+        name: contrail-k8s-crdloader
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsUser: 1000
+      serviceAccountName: contrail-deploy-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+---
+apiVersion: v1
+data:
+  contrail-eks-cr.yaml: |
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: ApiServer
+    metadata:
+      name: contrail-k8s-apiserver
+      namespace: contrail-system
+    spec:
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-k8s-apiserver:{{ .Values.manifestBuild }}
+          name: contrail-k8s-apiserver
+        serviceAccountName: contrail-system-serviceaccount
+    ---
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: ContrailCertificateManager
+    metadata:
+      name: contrailcertificatemanager
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-go-crypto:{{ .Values.manifestBuild }}
+          name: contrail-k8s-cert-generator
+      generatorType: gocrypto
+      secrets:
+      - components:
+        - vrouter-xmpp
+        name: xmpp-tls-vrouter-agent
+        namespace: contrail
+      - components:
+        - control-xmpp
+        name: xmpp-tls-controller
+        namespace: contrail
+      - components:
+        - vrouter-sandesh
+        name: sandesh-tls-vrouter-agent
+        namespace: contrail
+      - components:
+        - control-sandesh
+        name: sandesh-tls-controller
+        namespace: contrail
+      - name: introspect-tls-client
+        namespace: contrail
+      - components:
+        - contrail-api-server
+        dns:
+        - contrail-api.contrail-system.svc
+        name: contrail-api-tls
+        namespace: contrail-system
+      - components:
+        - contrail-status-monitor
+        dns:
+        - contrailstatus.contrail.svc
+        name: contrailstatusmonitor-tls
+        namespace: contrail
+    ---
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: Controller
+    metadata:
+      name: contrail-k8s-controller
+      namespace: contrail-system
+    spec:
+      common:
+        containers:
+        - env:
+          - name: LOG_CONFIG_FILE
+            value: /etc/config/cm/config.yaml
+          - name: XDG_CACHE_HOME
+            value: /tmp
+          image: {{ .Values.repoUrl }}/contrail-k8s-controller:{{ .Values.manifestBuild }}
+          name: contrail-k8s-controller
+          volumeMounts:
+          - mountPath: /etc/config/cm
+            name: config
+        serviceAccountName: contrail-system-serviceaccount
+        volumes:
+        - configMap:
+            items:
+            - key: config.yaml
+              path: config.yaml
+            name: contrail-k8s-controller-cm
+          name: config
+    ---
+    apiVersion: configplane.juniper.net/v1alpha1
+    kind: Kubemanager
+    metadata:
+      name: contrail-k8s-kubemanager
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-k8s-kubemanager:{{ .Values.manifestBuild }}
+          name: contrail-k8s-kubemanager
+      serviceV4Subnet: 172.20.0.0/16
+    ---
+    apiVersion: controlplane.juniper.net/v1alpha1
+    kind: Control
+    metadata:
+      name: contrail-control
+      namespace: contrail
+    spec:
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-control:{{ .Values.manifestBuild }}
+          name: contrail-control
+        - image: {{ .Values.repoUrl }}/contrail-telemetry-exporter:{{ .Values.manifestBuild }}
+          name: contrail-control-telemetry-exporter
+        initContainers:
+        - image: {{ .Values.repoUrl }}/contrail-init:{{ .Values.manifestBuild }}
+          name: contrail-init
+      introspectSslEnable: true
+      xmppAuthEnable: true
+    ---
+    apiVersion: dataplane.juniper.net/v1alpha1
+    kind: Vrouter
+    metadata:
+      name: contrail-vrouter-nodes
+      namespace: contrail
+    spec:
+      agent:
+        default:
+          xmppAuthEnable: true
+        sandesh:
+          introspectSslEnable: true
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-vrouter-agent:{{ .Values.manifestBuild }}
+          name: contrail-vrouter-agent
+        - image: {{ .Values.repoUrl }}/contrail-init:{{ .Values.manifestBuild }}
+          name: contrail-watcher
+        - image: {{ .Values.repoUrl }}/contrail-telemetry-exporter:{{ .Values.manifestBuild }}
+          name: contrail-vrouter-telemetry-exporter
+        initContainers:
+        - image: {{ .Values.repoUrl }}/contrail-init:{{ .Values.manifestBuild }}
+          name: contrail-init
+        - image: {{ .Values.repoUrl }}/contrail-cni-init:{{ .Values.manifestBuild }}
+          name: contrail-cni-init
+      maxUnavailablePercentage: 100%
+    ---
+    apiVersion: datastore.juniper.net/v1alpha1
+    kind: Etcd
+    metadata:
+      name: contrail-etcd
+      namespace: contrail-system
+    spec:
+      common:
+        containers:
+        - image: {{ .Values.repoUrl }}/contrail-etcd:{{ .Values.manifestBuild }}
+          name: contrail-etcd
+        initContainers:
+        - image: {{ .Values.repoUrl }}/contrail-cert-init:{{ .Values.manifestBuild }}
+          name: contrail-cert-init
+        - image: {{ .Values.repoUrl }}/contrail-cert-init:{{ .Values.manifestBuild }}
+          name: set-etcd-dir-owner
+        serviceAccountName: contrail-system-serviceaccount
+      serviceSpec:
+        snapshotInterval: 720m
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: contrail-eks-cr
+  namespace: contrail
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: apply-contrail
+  namespace: contrail
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - command:
+        - /applier.sh
+        - apiservers.configplane.juniper.net
+        - contrail-eks-cr.yaml
+        image: {{ .Values.repoUrl }}/contrail-k8s-applier:{{ .Values.manifestBuild }}
+        name: applier
+        volumeMounts:
+        - mountPath: /tmp/contrail
+          name: cr-volume
+      hostNetwork: true
+      restartPolicy: Never
+      serviceAccountName: contrail-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - configMap:
+          name: contrail-eks-cr
+        name: cr-volume
+{{ if .Values.controlDataNetworks.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contrail-network-config
+  namespace: contrail
+data:
+  # # Note: when separate interfaces are used for data and management, corresponding subnets (gateways
+  # # are optional) need to be specified, for example:
+  # networkConfig: |
+  #   controlDataNetworks:
+  #   - subnet: 5.5.5.0/2
+  #     gateway: 5.5.5.254
+  #   - subnet: 5.5.4.0/24
+  #     gateway: 5.5.4.254
+  # Below is the sample configuration of a single interface for both data and management.
+  networkConfig: |
+    controlDataNetworks:
+    - subnet: {{ .Values.controlDataNetworks.subnet }}
+      gateway: {{ .Values.controlDataNetworks.gateway }}
+---
+{{ end }}
