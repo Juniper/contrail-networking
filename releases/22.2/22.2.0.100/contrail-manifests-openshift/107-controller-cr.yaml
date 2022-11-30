@@ -1,0 +1,28 @@
+apiVersion: configplane.juniper.net/v1alpha1
+kind: Controller
+metadata:
+  name: contrail-k8s-controller
+  namespace: contrail-system
+spec:
+  common:
+    containers:
+    - env:
+      - name: LOG_CONFIG_FILE
+        value: /etc/config/cm/config.yaml
+      - name: XDG_CACHE_HOME
+        value: /tmp
+      image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-controller:22.2.0.93
+      name: contrail-k8s-controller
+      volumeMounts:
+      - mountPath: /etc/config/cm
+        name: config
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    serviceAccountName: contrail-system-serviceaccount
+    volumes:
+    - configMap:
+        items:
+        - key: config.yaml
+          path: config.yaml
+        name: contrail-k8s-controller-cm
+      name: config

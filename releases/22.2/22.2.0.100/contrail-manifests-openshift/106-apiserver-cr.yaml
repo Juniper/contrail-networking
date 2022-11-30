@@ -1,0 +1,13 @@
+apiVersion: configplane.juniper.net/v1alpha1
+kind: ApiServer
+metadata:
+  name: contrail-k8s-apiserver
+  namespace: contrail-system
+spec:
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-apiserver:22.2.0.93
+      name: contrail-k8s-apiserver
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    serviceAccountName: contrail-system-serviceaccount
