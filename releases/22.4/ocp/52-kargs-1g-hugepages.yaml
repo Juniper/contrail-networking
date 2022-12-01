@@ -1,0 +1,16 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: dpdk
+  name: 52-karg-1g-hugepages
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+  kernelArguments:
+    - default_hugepagesz=1G
+    - hugepagesz=1G
+    - hugepages=10
+    - hugepagesz=2M
+    - hugepages=20480
