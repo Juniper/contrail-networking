@@ -181,7 +181,7 @@ spec:
         - /manager
         - --metrics-addr
         - 127.0.0.1:8081
-        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-deployer:R22.4-99
+        image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-deployer:22.4.0.48
         name: contrail-k8s-deployer
       hostNetwork: true
       initContainers:
@@ -190,7 +190,7 @@ spec:
         - apply
         - -k
         - /crd
-        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-crdloader:R22.4-99
+        image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-crdloader:22.4.0.48
         name: contrail-k8s-crdloader
       securityContext:
         fsGroup: 2000
@@ -214,7 +214,7 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-apiserver:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-apiserver:22.4.0.48
           name: contrail-k8s-apiserver
         serviceAccountName: contrail-system-serviceaccount
     ---
@@ -226,13 +226,13 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-cert-manager:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-cert-manager:22.4.0.48
           name: contrail-k8s-cert-generator
-        - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-controller:v1.8.2
+        - image: enterprise-hub.juniper.net/contrail-container-early/cert-manager-controller:v1.8.2
           name: cert-manager
-        - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-webhook:v1.8.2
+        - image: enterprise-hub.juniper.net/contrail-container-early/cert-manager-webhook:v1.8.2
           name: cert-manager-webhook
-        - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-cainjector:v1.8.2
+        - image: enterprise-hub.juniper.net/contrail-container-early/cert-manager-cainjector:v1.8.2
           name: cert-manager-cainjector
       generatorType: cert-manager
       secrets:
@@ -280,7 +280,7 @@ data:
             value: /etc/config/cm/config.yaml
           - name: XDG_CACHE_HOME
             value: /tmp
-          image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-controller:R22.4-99
+          image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-controller:22.4.0.48
           name: contrail-k8s-controller
           volumeMounts:
           - mountPath: /etc/config/cm
@@ -302,7 +302,7 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-kubemanager:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-kubemanager:22.4.0.48
           name: contrail-k8s-kubemanager
     ---
     apiVersion: contrailstatus.juniper.net/v1alpha1
@@ -313,7 +313,7 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-contrailstatusmonitor:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-contrailstatusmonitor:22.4.0.48
           name: contrail-k8s-contrailstatusmonitor
         serviceAccountName: contrail-serviceaccount
     ---
@@ -325,12 +325,12 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-control:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-control:22.4.0.48
           name: contrail-control
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
           name: contrail-control-telemetry-exporter
         initContainers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-init
       introspectSslEnable: true
       xmppAuthEnable: true
@@ -348,16 +348,16 @@ data:
           introspectSslEnable: true
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-agent:22.4.0.48
           name: contrail-vrouter-agent
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-watcher
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-init
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-cni-init:22.4.0.48
           name: contrail-cni-init
     ---
     apiVersion: dataplane.juniper.net/v1alpha1
@@ -390,16 +390,16 @@ data:
                   values:
                   - dpdk
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-agent:22.4.0.48
           name: contrail-vrouter-agent
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-watcher
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-init
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-cni-init:22.4.0.48
           name: contrail-cni-init
       maxUnavailablePercentage: 100%
     ---
@@ -434,25 +434,25 @@ data:
                   values:
                   - dpdk
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-agent:22.4.0.48
           name: contrail-vrouter-agent
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-dpdk:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-dpdk:22.4.0.48
           name: contrail-vrouter-agent-dpdk
           resources:
             limits:
               hugepages-1Gi: 4Gi
             requests:
               memory: 4Gi
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-watcher
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
           name: contrail-init
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-kernel-init-dpdk:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-kernel-init-dpdk:22.4.0.48
           name: contrail-vrouter-kernel-init-dpdk
-        - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:R22.4-99
+        - image: enterprise-hub.juniper.net/contrail-container-early/contrail-cni-init:22.4.0.48
           name: contrail-cni-init
       dpdk:
         cpuCoreMask: 2,3
@@ -494,7 +494,7 @@ spec:
         - /applier.sh
         - apiservers.configplane.juniper.net
         - contrail-cr.yaml
-        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-applier:R22.4-99
+        image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-applier:22.4.0.48
         name: applier
         volumeMounts:
         - mountPath: /tmp/contrail

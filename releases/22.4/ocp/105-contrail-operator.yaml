@@ -18,7 +18,7 @@ spec:
         - /manager
         - --metrics-addr
         - 127.0.0.1:8081
-        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-deployer:R22.4-99
+        image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-deployer:22.4.0.48
         name: contrail-k8s-deployer
       hostNetwork: true
       affinity:

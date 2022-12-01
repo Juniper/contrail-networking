@@ -6,6 +6,6 @@ metadata:
 spec:
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-apiserver:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-apiserver:22.4.0.48
       name: contrail-k8s-apiserver
     serviceAccountName: contrail-system-serviceaccount

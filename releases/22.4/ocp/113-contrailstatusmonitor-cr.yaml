@@ -6,6 +6,6 @@ metadata:
 spec:
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-contrailstatusmonitor:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-contrailstatusmonitor:22.4.0.48
       name: contrail-k8s-contrailstatusmonitor
     serviceAccountName: contrail-serviceaccount

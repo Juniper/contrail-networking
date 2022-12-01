@@ -8,10 +8,10 @@ spec:
   introspectSslEnable: true
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-control:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-control:22.4.0.48
       name: contrail-control
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
       name: contrail-control-telemetry-exporter
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
       name: contrail-init

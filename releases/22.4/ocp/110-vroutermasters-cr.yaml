@@ -12,14 +12,14 @@ spec:
       introspectSslEnable: true
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-agent:22.4.0.48
       name: contrail-vrouter-agent
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
       name: contrail-watcher
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
       name: contrail-init
-    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:R22.4-99
+    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-cni-init:22.4.0.48
       name: contrail-cni-init
