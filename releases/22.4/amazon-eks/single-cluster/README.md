@@ -1,0 +1,1 @@
+Before applying manifests please configure repository credentials as described here https://www.juniper.net/documentation/us/en/software/cn-cloud-native22.3/cn-cloud-native-k8s-install-and-lcm/topics/task/cn-cloud-native-k8s-configure-secrets.html
