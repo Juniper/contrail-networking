@@ -4308,10 +4308,21 @@ spec:
       served: true
       storage: true
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: cert-manager
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+type: kubernetes.io/dockerconfigjson
+---
 # Source: cert-manager/templates/cainjector-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 automountServiceAccountToken: true
+imagePullSecrets:
+- name: registrypullsecret
 metadata:
   name: cert-manager-cainjector
   namespace: "cert-manager"
@@ -4325,6 +4336,8 @@ metadata:
 # Source: cert-manager/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
+imagePullSecrets:
+- name: registrypullsecret
 automountServiceAccountToken: true
 metadata:
   name: cert-manager
@@ -4339,6 +4352,8 @@ metadata:
 # Source: cert-manager/templates/webhook-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
+imagePullSecrets:
+- name: registrypullsecret
 automountServiceAccountToken: true
 metadata:
   name: cert-manager-webhook
@@ -5154,7 +5169,7 @@ spec:
       hostNetwork: true
       containers:
         - name: cert-manager
-          image: "svl-artifactory.juniper.net/atom-docker/cn2/jetstack/cert-manager-cainjector:v1.8.2"
+          image: "enterprise-hub.juniper.net/contrail-container-prod/cert-manager-cainjector:v1.8.2"
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
@@ -5212,7 +5227,7 @@ spec:
       hostNetwork: true
       containers:
         - name: cert-manager
-          image: "svl-artifactory.juniper.net/atom-docker/cn2/jetstack/cert-manager-controller:v1.8.2"
+          image: "enterprise-hub.juniper.net/contrail-container-prod/cert-manager-controller:v1.8.2"
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
@@ -5271,7 +5286,7 @@ spec:
       hostNetwork: true
       containers:
         - name: cert-manager
-          image: "svl-artifactory.juniper.net/atom-docker/cn2/jetstack/cert-manager-webhook:v1.8.2"
+          image: "enterprise-hub.juniper.net/contrail-container-prod/cert-manager-webhook:v1.8.2"
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
