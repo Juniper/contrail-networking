@@ -11,7 +11,7 @@ spec:
         value: /etc/config/cm/config.yaml
       - name: XDG_CACHE_HOME
         value: /tmp
-      image: enterprise-hub.juniper.net/contrail-container-early/contrail-k8s-controller:22.4.0.48
+      image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-controller:22.4.0.284
       name: contrail-k8s-controller
       volumeMounts:
       - mountPath: /etc/config/cm

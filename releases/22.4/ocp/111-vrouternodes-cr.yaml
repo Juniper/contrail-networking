@@ -29,14 +29,14 @@ spec:
               values:
               - dpdk
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-vrouter-agent:22.4.0.48
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:22.4.0.284
       name: contrail-vrouter-agent
-    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:22.4.0.284
       name: contrail-watcher
-    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-telemetry-exporter:22.4.0.48
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:22.4.0.284
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-init:22.4.0.48
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:22.4.0.284
       name: contrail-init
-    - image: enterprise-hub.juniper.net/contrail-container-early/contrail-cni-init:22.4.0.48
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:22.4.0.284
       name: contrail-cni-init
