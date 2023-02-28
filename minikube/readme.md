@@ -62,7 +62,7 @@ minikube version
         ❯ minikube ssh
         
         $ docker login enterprise-hub.juniper.net <<< This command should be run inside the minikube VM
-          Username: vshenoy@juniper.net
+          Username: << your email id used for login >>
           Password:                        <<< Paste the access-token recieved in the email from enterprise-hub-util@juniper.net
           WARNING! Your password will be stored unencrypted in /home/docker/.docker/config.json.
           Configure a credential helper to remove this warning. See
