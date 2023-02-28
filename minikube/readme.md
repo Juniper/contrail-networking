@@ -36,49 +36,82 @@ If the downloaded file is indeed minikube-darwin-amd64, then to install it, use 
 sudo install minikube-darwin-amd64 /usr/local/bin/minikube 
 minikube version
 ```
->
-  The first command will require your local password. The second `minikube version` command will usually flag a security warning on your Macbook. You may   see an OSX pop-up error because you downloaded this software outside the App store. To allow it, open the menu _“<Apple> / System Preferences /      Security & Privacy”_ and go to the General tab. 
-  You should see a warning about   minikube, and a button to allow it. Click that and enter your password.  After this, re-run the `minikube version` command. Ensure it runs and presents the version.
 
-3. The installation of the CNI is driven by the deployer manifest “[deployer.yaml](https://github.com/Juniper/contrail-networking/blob/main/releases/22.1/minikube/deployer.yaml)” This is part of the manifest files in the [minikube folder](https://github.com/Juniper/contrail-networking/tree/main/releases/22.1/minikube) for the release.
-  
-4. You must open the deployer.yaml file and replace the 4 instances of `<base64-encoded-credential>` with your dockerconfigjson authentication string to connect to enterprise-hub.juniper.net so that Kubernetes can download the container images for CN2. Your string will be base64 encoded, but decoded it will look like this:
-> 
-```json5
-  
-  {"auths":{"enterprise-hub.juniper.net":{"username":"SomeUserName","password":"SomePassWorD123","email":"yourid@juniper.net","auth":"S_______RadVc="}}}
+```The first command will require your local password. The second `minikube version` command will usually flag a security warning on your Macbook. You may    see an OSX pop-up error because you downloaded this software outside the App store. To allow it, open the menu _“<Apple> / System Preferences /            Security & Privacy”_ and go to the General tab. You should see a warning about   minikube, and a button to allow it. Click that and enter your password.    After this, re-run the `minikube version` command. Ensure it runs and presents the version.```
+
+3. Next we will first bring up minikube without the CN2 cni. The goal of this step is to get into the minikube hyperkit shell and use the docker inside        that shell to get the docker registry credentials from https://enterprise-hub.juniper.net. The reason for using the docker installed on minikube            hyperkit VM to fetch registry authentication token and not from the docker installed on the MacOS is because with MacOS the docker registry token is        stored in the OSX keychain by default and this can create issues. Please follow the sub-steps as follows to fetch the docker registry token required to    fetch CN2 docker containers.
+
+   Please note that ❯ is the prompt on the MACOS and $ is the prompt inside minikube VM.
 
 ```
+    3.1 Git clone the CN2 deployer github repo and navigate to the minikube deployer folder for 22.4 release.
+        
+        ❯ git clone https://github.com/Juniper/contrail-networking.git
+        ❯ cd contrail-networking/releases/22.4/minikube                <<< This will be our working directory.
+        ❯ ls
+          deployer.yaml
+        
+    
+    3.2 Now bring up minikube with the default cni ( bridge ). Run the below command and wait for minikube to come up.
+   
+        ❯ minikube start --driver hyperkit --container-runtime cri-o --memory 7g --kubernetes-version stable –force
+    
+    3.3 Login to the minikube vm and from there authenticate with https://enterprise-hub.juniper.net docker registry using the username and the   
+        access_token received in the email.
+        
+        ❯ minikube ssh
+        
+        $ docker login enterprise-hub.juniper.net <<< This command should be run inside the minikube VM
+          Username: << your email id used for login >>
+          Password:                        <<< Paste the access-token recieved in the email from enterprise-hub-util@juniper.net
+          WARNING! Your password will be stored unencrypted in /home/docker/.docker/config.json.
+          Configure a credential helper to remove this warning. See
+          https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
-Put this string into a new file called auth.txt with no new line at the end. The username and password will be issued to you upon signing up for the [CN2 free trial](https://www.juniper.net/us/en/forms/cn2-free-trial.html). You still need to generate the "auth": section of the string as an authentication token. Do this with a Podman or Docker login. Once you [install Podman](https://podman.io/getting-started/installation) and do the machine start, you can run `podman login enterprise-hub.juniper.net` ([docs](https://docs.podman.io/en/latest/markdown/podman-login.1.html))
-  
-  This will generate your auth token in the auth.json file. See the token with the command `more ~/.config/containers/auth.json`
- >
-  ```json5 
-  
-  {
-        "auths": {
-                "enterprise-hub.juniper.net": {
-                        "auth": "S_______RadVc="
-                }
-        }
-}
+          Login Succeeded
+        $
+        
+     3.4 Log out of the minikube and on the local MacOS machine copy the ~/.docker/config.json from the minikube VM to the local MacOS working directory.
+     
+         ❯ sudo scp -i $(minikube ssh-key) docker@$(minikube ip):~/.docker/config.json.
 
+           Password:
+           The authenticity of host '192.168.64.11 (192.168.64.11)' can't be established.
+           ED25519 key fingerprint is SHA256:upwPzZEyEN8cz3nxndznsq0/16vndbVV0+LdlxWfxjI.
+           This key is not known by any other names
+           Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+           Warning: Permanently added '192.168.64.11' (ED25519) to the list of known hosts.
+           config.json                                                                                                   100% 1190     1.4MB/s   00:00
+           
+     3.5 Content of config.json should look something like below
+     
+         ❯ cat config.json 
+           {
+	           "auths": {
+		           "enterprise-hub.juniper.net": {
+			            "auth": "<encrypted-auth-key>"
+		            }
+	           }
+          }
+          
+      3.6 Now do a base64 encoding of the above config.json file which we will provide as a secret to CN2 deployer manifest file in the next step.
+      
+        ❯ ENCODED_CREDS=$(sudo base64 -i config.json)
+        
+      3.7 The next step is to replace the occurance of <base64-encoded-credential> in deployer.yaml with the base64 encoded value of the docker registry             authentication credentials.
+      
+        ❯ sudo sed -i '' s/'<base64-encoded-credential>'/$ENCODED_CREDS/ deployer.yaml
+        
+      3.8 Now we can destroy the minikube VM so that we can bring up it back up using CN2 as the CNI which is shown in the next step.
+      
+        ❯ sudo minikube delete --purge   
 ```
 
-  Copy that token into your auth.txt file’s third section. Note the above example is just an invalid placeholder, so you will need to replace it. Next you need to re-encode the entire string with username, password and token using this command:
->
-```
-  base64 -i auth.txt -o auth-encoded.txt
-```
-  
-Open the file named auth-encoded.txt. Copy this string into the deployer.yaml file to replace each instance of the placeholder `<base64-encoded-credential>`. Assuming this was completed properly, your enterprise-hub.juniper.net credentials will work and the CN2 container images will download just fine in the next step.
 
+5. Next step is to deploy minikube using CN2 as the CNI as shown below.
 
-5. Deploying CN2 to your minikube cluster. First change directory into your downloaded manifests/ folder, then start minikube. If you previously have a minikube running, delete it first with `minikube delete`
->
 ```
-minikube start --driver hyperkit --container-runtime cri-o --memory 7g --cni deployer.yaml --kubernetes-version stable –force
+         ❯ minikube start --driver hyperkit --container-runtime cri-o --memory 7g --cni deployer.yaml --kubernetes-version stable –force
 ```
 
   If you intend to later use Lens with Prometheus, Grafana and such, included in the optional [CN2 Analytics](https://support.juniper.net/support/downloads/?p=contrail-networking) package, then please give minikube 7g of memory (or more if deploying Influx and Emissary Ingress also in the analytics helm chart package), but 5g is fine in general.
