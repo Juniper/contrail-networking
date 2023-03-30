@@ -1,0 +1,11 @@
+apiVersion: contrailstatus.juniper.net/v1alpha1
+kind: Contrailstatusmonitor
+metadata:
+  name: contrail-k8s-contrailstatusmonitor
+  namespace: contrail
+spec:
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-contrailstatusmonitor:23.1.0.282
+      name: contrail-k8s-contrailstatusmonitor
+    serviceAccountName: contrail-serviceaccount
