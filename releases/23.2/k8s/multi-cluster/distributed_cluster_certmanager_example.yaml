@@ -1,0 +1,52 @@
+apiVersion: configplane.juniper.net/v1alpha1
+kind: ContrailCertificateManager
+metadata:
+  name: contrailcertificatemanager
+  namespace: contrail
+spec:
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-cert-manager:23.2.0.156
+      name: contrail-k8s-cert-generator
+    - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-controller:v1.8.2
+      name: cert-manager
+    - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-webhook:v1.8.2
+      name: cert-manager-webhook
+    - image: enterprise-hub.juniper.net/contrail-container-internal/cert-manager-cainjector:v1.8.2
+      name: cert-manager-cainjector
+  generatorType: cert-manager
+  secrets:
+  - components:
+    - vrouter-xmpp
+    name: xmpp-tls-vrouter-agent
+    namespace: contrail
+  - components:
+    - control-xmpp
+    name: xmpp-tls-controller
+    namespace: contrail
+  - components:
+    - vrouter-sandesh
+    name: sandesh-tls-vrouter-agent
+    namespace: contrail
+  - components:
+    - control-sandesh
+    name: sandesh-tls-controller
+    namespace: contrail
+  - name: introspect-tls-client
+    namespace: contrail
+  - components:
+    - contrail-api-server
+    dns:
+    - contrail-api.contrail-system.svc
+    name: contrail-api-tls
+    namespace: contrail-system
+  - components:
+    - contrail-status-monitor
+    dns:
+    - contrailstatus.contrail.svc
+    name: contrailstatusmonitor-tls
+    namespace: contrail
+  - name: central-collector-tls
+    namespace: contrail
+  - name: telemetry-exporter-tls
+    namespace: contrail

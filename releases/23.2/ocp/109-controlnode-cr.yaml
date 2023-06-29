@@ -1,0 +1,18 @@
+apiVersion: controlplane.juniper.net/v1alpha1
+kind: Control
+metadata:
+  name: contrail-control
+  namespace: contrail
+spec:
+  xmppAuthEnable: true
+  introspectSslEnable: true
+  sandeshSslEnable: true
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-control:23.2.0.156
+      name: contrail-control
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:23.2.0.156
+      name: contrail-control-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.2.0.156
+      name: contrail-init
