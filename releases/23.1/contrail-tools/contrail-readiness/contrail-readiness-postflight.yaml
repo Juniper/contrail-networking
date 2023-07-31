@@ -19,7 +19,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: contrailresources-check
-            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.1-282
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:23.1.0.282
             imagePullPolicy: Always
             command: ["/contrailresources"]
             env:
@@ -45,7 +45,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: ping-check
-            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.1-282
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:23.1.0.282
             imagePullPolicy: Always
             command: ["/ping"]
             env:
@@ -71,7 +71,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: tcp-check
-            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.1-282
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:23.1.0.282
             imagePullPolicy: Always
             command: ["/tcp"]
             env:
@@ -97,7 +97,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: udp-check
-            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.1-282
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:23.1.0.282
             imagePullPolicy: Always
             command: ["/udp"]
             env:

@@ -20,7 +20,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: cn2uninstall
-            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-tasks:R23.1-282
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-tasks:23.1.0.282
             imagePullPolicy: Always
             command: ["/cn2uninstall"]
             env:

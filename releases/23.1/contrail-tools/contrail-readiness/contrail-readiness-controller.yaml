@@ -63,7 +63,7 @@ spec:
       containers:
         - command:
             - /manager
-          image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness:R23.1-282
+          image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness:23.1.0.282
           imagePullPolicy: Always
           name: contrail-readiness
       hostNetwork: true
