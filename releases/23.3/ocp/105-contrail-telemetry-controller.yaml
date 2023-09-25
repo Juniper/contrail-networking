@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contrail-telemetry-controller
+  namespace: contrail
+  labels:
+    app: contrail-telemetry-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contrail-telemetry-controller
+  template:
+    metadata:
+      labels:
+        app: contrail-telemetry-controller
+    spec:
+      serviceAccount: contrail-serviceaccount
+      priorityClassName: system-cluster-critical
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: contrail-scheduler
+        image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-controller:latest
+        command:
+        - /contrail-telemetry-controller
+

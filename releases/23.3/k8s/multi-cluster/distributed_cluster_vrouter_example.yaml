@@ -1,0 +1,157 @@
+apiVersion: dataplane.juniper.net/v1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-dpdk-nodes
+  namespace: contrail
+spec:
+  agent:
+    default:
+      collectors:
+      - localhost:6700
+      xmppAuthEnable: true
+    sandesh:
+      introspectSslEnable: true
+      sandeshSslEnable: true
+  agentModeType: dpdk
+  clusterName: multi-cluster
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: DoesNotExist
+            - key: node-role.kubernetes.io/control-plane
+              operator: DoesNotExist
+            - key: agent-mode
+              operator: In
+              values:
+              - dpdk
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:23.3.0.98
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-dpdk:23.3.0.98
+      name: contrail-vrouter-agent-dpdk
+      resources:
+        limits:
+          hugepages-2Mi: 3Gi
+        requests:
+          memory: 3Gi
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:23.3.0.98
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-kernel-init-dpdk:23.3.0.98
+      name: contrail-vrouter-kernel-init-dpdk
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:23.3.0.98
+      name: contrail-cni-init
+  dpdk:
+    cpuCoreMask: 2,3
+    dpdkCommandAdditionalArgs: --yield_option 0
+    dpdkCtrlThreadMask: 4,5
+    dpdkUioDriver: vfio-pci
+    hugePages: "3072"
+    hugePagesDir: /dev/hugepages
+    serviceCoreMask: 4,5
+  logPath: /var/log/cn2
+  maxUnavailablePercentage: 100%
+---
+apiVersion: dataplane.juniper.net/v1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-masters
+  namespace: contrail
+spec:
+  agent:
+    default:
+      collectors:
+      - localhost:6700
+      xmppAuthEnable: true
+    sandesh:
+      introspectSslEnable: true
+      sandeshSslEnable: true
+  clusterName: multi-cluster
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:23.3.0.98
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:23.3.0.98
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:23.3.0.98
+      name: contrail-cni-init
+---
+apiVersion: dataplane.juniper.net/v1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-nodes
+  namespace: contrail
+spec:
+  agent:
+    default:
+      collectors:
+      - localhost:6700
+      xmppAuthEnable: true
+    sandesh:
+      introspectSslEnable: true
+      sandeshSslEnable: true
+  clusterName: multi-cluster
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: DoesNotExist
+            - key: node-role.kubernetes.io/control-plane
+              operator: DoesNotExist
+            - key: agent-mode
+              operator: NotIn
+              values:
+              - dpdk
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-vrouter-agent:23.3.0.98
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-telemetry-exporter:23.3.0.98
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-init:23.3.0.98
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cni-init:23.3.0.98
+      name: contrail-cni-init
+  maxUnavailablePercentage: 100%
+#
+# contrail-network-config configMap is necessary when more than one interface
+# is available for control/data traffic. Configure one or more subnets/gateways
+# for control/data traffic. In the example below, change the subnet and gateway
+# values for your specific topology.
+#
+# Uncomment below this line to include contrail-network-config configMap
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: contrail-network-config
+#   namespace: contrail
+# data:
+#   networkConfig: |
+#     controlDataNetworks:
+#     - subnet: 10.16.0.0/24
+#       gateway: 10.16.0.254
+#     - subnet: 10.10.15.0/24
+#       gateway: 10.10.15.254
+#     - subnet: 10.10.20.0/24
+#       gateway: 10.10.20.254
+#     - subnet: 10.10.30.0/24
+#       gateway: 10.10.30.254

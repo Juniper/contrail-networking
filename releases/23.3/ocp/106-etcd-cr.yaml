@@ -1,0 +1,18 @@
+apiVersion: datastore.juniper.net/v1alpha1
+kind: Etcd
+metadata:
+  name: contrail-etcd
+  namespace: contrail-system
+spec:
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-etcd:23.3.0.98
+      name: contrail-etcd
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cert-init:23.3.0.98
+      name: contrail-cert-init
+    - image: enterprise-hub.juniper.net/contrail-container-internal/contrail-cert-init:23.3.0.98
+      name: set-etcd-dir-owner
+    serviceAccountName: contrail-system-serviceaccount
+  serviceSpec:
+    snapshotInterval: 720m

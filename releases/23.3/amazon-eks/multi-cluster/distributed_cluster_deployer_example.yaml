@@ -1,0 +1,231 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-deploy
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-system
+---
+apiVersion: v1
+imagePullSecrets:
+- name: registrypullsecret
+kind: ServiceAccount
+metadata:
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+---
+apiVersion: v1
+imagePullSecrets:
+- name: registrypullsecret
+kind: ServiceAccount
+metadata:
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+---
+apiVersion: v1
+imagePullSecrets:
+- name: registrypullsecret
+kind: ServiceAccount
+metadata:
+  name: contrail-serviceaccount
+  namespace: contrail
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-deploy-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-system-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-deploy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-deploy-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-deploy-serviceaccount
+  namespace: contrail-deploy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-serviceaccount
+  namespace: contrail
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-system-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-system-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-system-serviceaccount
+  namespace: contrail-system
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-deploy
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+data:
+  ca.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZiekNDQTFlZ0F3SUJBZ0lVYjltaUFBWWR2R3dNUDJDaDR1Y1VVaTNvdlJnd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0xqRXNNQ29HQTFVRUF3d2pkMlZpYUc5dmF5MXpaWEoyYVdObExtTnZiblJ5WVdsc0xXUmxjR3h2ZVM1egpkbU13SGhjTk1qTXdOVEU1TVRnMU9UUXlXaGNOTXpNd05URTJNVGcxT1RReVdqQXVNU3d3S2dZRFZRUUREQ04zClpXSm9iMjlyTFhObGNuWnBZMlV1WTI5dWRISmhhV3d0WkdWd2JHOTVMbk4yWXpDQ0FpSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0lQQURDQ0Fnb0NnZ0lCQUpUYlA3YXNZQitJcEZIbFRXd3ozeXdKODJsOHdNOSt2Q2E2MVkwWApVaTM5cjkwNEcvU01WaTk3ekhEcnprUkswVStHOFozbUF1NkJiTm5rWFZPOEREdDhnTks3RExhTXY2Nk1OYi9UCnR0a090WXBZcW9MaWdQYjFpbjh6NEt5V1V5UlBYT2ZLd0diYjUxNm5RbkllK1lSU0tXZE9xTU03dlJWL2l4bmEKRjdZZ1R4d0o4WU05TEw5M2YrR1dZd2RjSFY0K252bnIwc0V6SlVHRkM2bG05V1VmNHNNazNPNzljZXk3eWMzYQo1QkowL0VvbEN6dHY5NkRZYzJFcFZ1Z3kyendXTGhOMjFob2JNTlNyNWp1R1pMN1hFTVkrbWNQbDRkSkVocU1ICkd6bUJYZ0ZlU0ZaUDhXczJWeFZaWGwzSjd3dVZMV1FQalZseUxYVWJyRmFXem5nZEMzYWZSYmZrc3ArcGtXL1UKMEQvZXBrSG41THJHS1FZdXlIZmhhVFlUbzRsaklvWExHTkZWRkVnb2NVVE14UDhTVjRqbmVQdHlCenMzWXpaNwp0OTlLMjZFSURZcnlwNkZKMng0QUlUUUlDZzJLdStHblBleWJRc1hzMDA1N3FCRDhhRkZXOFExejY3VlBuQmlTCjh6N2J0UVF6Zkc3Ukh6VmJZaVJWaXZzaG5HY2FJOWdYVkVGNE50RHpITXFTU2VYRzMydTc5TFpXVGVoZ2ZVSVcKMzZ4V1k0MExzQ3FUZkQ4ZnArVTByWDN6MllDdi9sQkMxUHBFYTI4TjdEZUU0Z2VwUjEvY0g4WHg5enBYVk4xZgowUndramtNNUU5YTBHUFlxVTRYUm0rNHE3TU9ITmptRzY4WXkySDN6VlBEeDJwSTVmb0FOREVLY0VBdjhlNmZ2CjAvcWRBZ01CQUFHamdZUXdnWUV3SFFZRFZSME9CQllFRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1COEcKQTFVZEl3UVlNQmFBRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1BOEdBMVVkRXdFQi93UUZNQU1CQWY4dwpMZ1lEVlIwUkJDY3dKWUlqZDJWaWFHOXZheTF6WlhKMmFXTmxMbU52Ym5SeVlXbHNMV1JsY0d4dmVTNXpkbU13CkRRWUpLb1pJaHZjTkFRRUxCUUFEZ2dJQkFFRDAxckpoc0pqYXJ2VUJkQThTZ3FqcTlkelpRMDJuZndJbHVGbzAKVThmMmdsQlFmdHJuY1RyV2hUaHZGMmZYTTVqdnVaUFc1c1g2dGMrMVdPWm55aktSZTRxaTExNzFWM2I5WkZ5aQovWWw5OXY1K2ZzZWJSaXlEckROU1ZoRjBZdERQdmVHaVk2S3IyZG1yaHp0dzBhVWR3Nzg5a0E3WHIzOUhmenAyClBYbnh0TGNhNGNSYnpSVWNycyt4M0c3STJzVHRMTEkrQ2k2Mm4zOWxFQ1c3dGU4UXpEQkpMRXliRUN5d3pVMDEKOGplcGNWcWQ4K0tvQXB4cFRjeGE0di92MTB2bnFuTGMrcElJYVhFMjROL2pYL084OEhJdHQrQkJ5T0xpUkdHdApvRlNGc3JWRXJ1a0tvcDFVcWJIL1E0ajhyY0dOT0Y5L0hWc0NnV2M5SEk0d0grOXBqYkRwR3R1ZW1xSWU1Z0RFCmh6MmR6N1hvMEZ1emJUaGo2L2JmY3R3bU82TjRCZm1pMjdVbXlGR2MxOXBQVExBSk1ZbitPSDJxWGJVdUE0MGkKbFJzRE5tU2xkUlpScGdsdGMwb3oycmVjLytEeVB0aG9GSDF0aFdLU0hyNytHOFI1U2p3TXgxZjRUcldMVGplQQpodTFxaDZZWSsxT1pRbkJXOXh4V2QzNDl0eHJHT1E4ejdtdE4vY0I5UEV4cDZGUzJwdXNQUkZEQTZRbnJNaDZqCmxUVTZpTDdOZzRNTVR4YXFYYWVMY1d3TnBKWDhwanBjMlJRVS8wS1doN1BFUTN6anhuRTVWSEdJUk5nSXViRzEKVVprbG80ald6R1ZNU3d6UWMza1o3emtXeWJaNjcyMDV2UFRDMEdydzEyb0JMYTNLWGpVT0hjcERoU0g3NzFOdgpnWkVRCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZiekNDQTFlZ0F3SUJBZ0lVYjltaUFBWWR2R3dNUDJDaDR1Y1VVaTNvdlJnd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0xqRXNNQ29HQTFVRUF3d2pkMlZpYUc5dmF5MXpaWEoyYVdObExtTnZiblJ5WVdsc0xXUmxjR3h2ZVM1egpkbU13SGhjTk1qTXdOVEU1TVRnMU9UUXlXaGNOTXpNd05URTJNVGcxT1RReVdqQXVNU3d3S2dZRFZRUUREQ04zClpXSm9iMjlyTFhObGNuWnBZMlV1WTI5dWRISmhhV3d0WkdWd2JHOTVMbk4yWXpDQ0FpSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0lQQURDQ0Fnb0NnZ0lCQUpUYlA3YXNZQitJcEZIbFRXd3ozeXdKODJsOHdNOSt2Q2E2MVkwWApVaTM5cjkwNEcvU01WaTk3ekhEcnprUkswVStHOFozbUF1NkJiTm5rWFZPOEREdDhnTks3RExhTXY2Nk1OYi9UCnR0a090WXBZcW9MaWdQYjFpbjh6NEt5V1V5UlBYT2ZLd0diYjUxNm5RbkllK1lSU0tXZE9xTU03dlJWL2l4bmEKRjdZZ1R4d0o4WU05TEw5M2YrR1dZd2RjSFY0K252bnIwc0V6SlVHRkM2bG05V1VmNHNNazNPNzljZXk3eWMzYQo1QkowL0VvbEN6dHY5NkRZYzJFcFZ1Z3kyendXTGhOMjFob2JNTlNyNWp1R1pMN1hFTVkrbWNQbDRkSkVocU1ICkd6bUJYZ0ZlU0ZaUDhXczJWeFZaWGwzSjd3dVZMV1FQalZseUxYVWJyRmFXem5nZEMzYWZSYmZrc3ArcGtXL1UKMEQvZXBrSG41THJHS1FZdXlIZmhhVFlUbzRsaklvWExHTkZWRkVnb2NVVE14UDhTVjRqbmVQdHlCenMzWXpaNwp0OTlLMjZFSURZcnlwNkZKMng0QUlUUUlDZzJLdStHblBleWJRc1hzMDA1N3FCRDhhRkZXOFExejY3VlBuQmlTCjh6N2J0UVF6Zkc3Ukh6VmJZaVJWaXZzaG5HY2FJOWdYVkVGNE50RHpITXFTU2VYRzMydTc5TFpXVGVoZ2ZVSVcKMzZ4V1k0MExzQ3FUZkQ4ZnArVTByWDN6MllDdi9sQkMxUHBFYTI4TjdEZUU0Z2VwUjEvY0g4WHg5enBYVk4xZgowUndramtNNUU5YTBHUFlxVTRYUm0rNHE3TU9ITmptRzY4WXkySDN6VlBEeDJwSTVmb0FOREVLY0VBdjhlNmZ2CjAvcWRBZ01CQUFHamdZUXdnWUV3SFFZRFZSME9CQllFRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1COEcKQTFVZEl3UVlNQmFBRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1BOEdBMVVkRXdFQi93UUZNQU1CQWY4dwpMZ1lEVlIwUkJDY3dKWUlqZDJWaWFHOXZheTF6WlhKMmFXTmxMbU52Ym5SeVlXbHNMV1JsY0d4dmVTNXpkbU13CkRRWUpLb1pJaHZjTkFRRUxCUUFEZ2dJQkFFRDAxckpoc0pqYXJ2VUJkQThTZ3FqcTlkelpRMDJuZndJbHVGbzAKVThmMmdsQlFmdHJuY1RyV2hUaHZGMmZYTTVqdnVaUFc1c1g2dGMrMVdPWm55aktSZTRxaTExNzFWM2I5WkZ5aQovWWw5OXY1K2ZzZWJSaXlEckROU1ZoRjBZdERQdmVHaVk2S3IyZG1yaHp0dzBhVWR3Nzg5a0E3WHIzOUhmenAyClBYbnh0TGNhNGNSYnpSVWNycyt4M0c3STJzVHRMTEkrQ2k2Mm4zOWxFQ1c3dGU4UXpEQkpMRXliRUN5d3pVMDEKOGplcGNWcWQ4K0tvQXB4cFRjeGE0di92MTB2bnFuTGMrcElJYVhFMjROL2pYL084OEhJdHQrQkJ5T0xpUkdHdApvRlNGc3JWRXJ1a0tvcDFVcWJIL1E0ajhyY0dOT0Y5L0hWc0NnV2M5SEk0d0grOXBqYkRwR3R1ZW1xSWU1Z0RFCmh6MmR6N1hvMEZ1emJUaGo2L2JmY3R3bU82TjRCZm1pMjdVbXlGR2MxOXBQVExBSk1ZbitPSDJxWGJVdUE0MGkKbFJzRE5tU2xkUlpScGdsdGMwb3oycmVjLytEeVB0aG9GSDF0aFdLU0hyNytHOFI1U2p3TXgxZjRUcldMVGplQQpodTFxaDZZWSsxT1pRbkJXOXh4V2QzNDl0eHJHT1E4ejdtdE4vY0I5UEV4cDZGUzJwdXNQUkZEQTZRbnJNaDZqCmxUVTZpTDdOZzRNTVR4YXFYYWVMY1d3TnBKWDhwanBjMlJRVS8wS1doN1BFUTN6anhuRTVWSEdJUk5nSXViRzEKVVprbG80ald6R1ZNU3d6UWMza1o3emtXeWJaNjcyMDV2UFRDMEdydzEyb0JMYTNLWGpVT0hjcERoU0g3NzFOdgpnWkVRCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUpRQUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQ1Nvd2dna21BZ0VBQW9JQ0FRQ1UyeisyckdBZmlLUlIKNVUxc005OHNDZk5wZk1EUGZyd211dFdORjFJdC9hL2RPQnYwakZZdmU4eHc2ODVFU3RGUGh2R2Q1Z0x1Z1d6Wgo1RjFUdkF3N2ZJRFN1d3kyakwrdWpEVy8wN2JaRHJXS1dLcUM0b0QyOVlwL00rQ3NsbE1rVDF6bnlzQm0yK2RlCnAwSnlIdm1FVWlsblRxakRPNzBWZjRzWjJoZTJJRThjQ2ZHRFBTeS9kMy9obG1NSFhCMWVQcDc1NjlMQk15VkIKaFF1cFp2VmxIK0xESk56dS9YSHN1OG5OMnVRU2RQeEtKUXM3Yi9lZzJITmhLVmJvTXRzOEZpNFRkdFlhR3pEVQpxK1k3aG1TKzF4REdQcG5ENWVIU1JJYWpCeHM1Z1Y0QlhraFdUL0ZyTmxjVldWNWR5ZThMbFMxa0Q0MVpjaTExCkc2eFdsczU0SFF0Mm4wVzM1TEtmcVpGdjFOQS8zcVpCNStTNnhpa0dMc2gzNFdrMkU2T0pZeUtGeXhqUlZSUkkKS0hGRXpNVC9FbGVJNTNqN2NnYzdOMk0yZTdmZlN0dWhDQTJLOHFlaFNkc2VBQ0UwQ0FvTmlydmhwejNzbTBMRgo3Tk5PZTZnUS9HaFJWdkVOYyt1MVQ1d1lrdk0rMjdVRU0zeHUwUjgxVzJJa1ZZcjdJWnhuR2lQWUYxUkJlRGJRCjh4ektra25seHQ5cnUvUzJWazNvWUgxQ0Z0K3NWbU9OQzdBcWszdy9INmZsTksxOTg5bUFyLzVRUXRUNlJHdHYKRGV3M2hPSUhxVWRmM0IvRjhmYzZWMVRkWDlFY0pJNURPUlBXdEJqMktsT0YwWnZ1S3V6RGh6WTVodXZHTXRoOQo4MVR3OGRxU09YNkFEUXhDbkJBTC9IdW43OVA2blFJREFRQUJBb0lCL3gvRVprTnJINkR3ZjdweCtXQ3ZLTFc5ClI4WXkwUE1RekJhSTZ2a0dvelpQajVaWmpiL2VkM1VSSVNFOFpORXVOMndPTmJWU0pUejBVT2kzeXhEWDVpckwKeFJpclNmR3JYQ3ZLV2ZKcmlRajh2TUZyc3p3cVhzSE02VENScGZJZUFINHVMV25Tc0lFZzVHcEdSNndrTkdBQQpPZFhKcHRRRGE3Uzc0VUI0ZFZLMW80RzJOeUU1MDF0dmd4Yk1MQUREOUpHWFF4SGZ3ZS9PaTRLODJYTjRPTE5UCmlhSk83dGRuVURXVE0wSk1XdGR6WkIvRCswUE5tTTl0Nm9iOFpTQ3hNVHAyMXFLM0tLU2MwNU02Q3lRUFRwTGoKSDZqSXMweEY3WjZsTkZxNGgyT2t1QjVPWG9nTS92aUVocXE2NThhQ25wclJxaXI5U004ODIzYWlpdGdSOEpkdgpTSGlxVFRIM0JuY0srL0ltMTQwaXhDRVRLOHFzZG15UnBhSFhDTG5EcWZiNUFoWEs3TUNUUkd3bmlyb01OY2VSCjlZTlRHc0JLRVdTRWZJOW1uU2haWjJZeHRVZjZ1KzJiOG0wMFNVQUdkR2ExNWg3dHhjU0k4WjdITldvRzZROEYKbENLZDV0b2oxQjJ4Z2lnVllPcm81SlJheWFnOTYxK3NidlZkbFAwTGVlcm93UHorK28wemtyempVMG1rNGE1SAp0d1dadHJVMTBzT0VybE9yU0VvcllUbm16RnVvYjdvZUVrK2NGTU1wZTRhK2RnaUFiM3EvTUtzclRvN2RRMkNRCm5IMXVlNlp4T3QxWndzYVh1ME9KK2JIUnVZNXlxeDYxQ3lTdk1CWWRzLys1OXhCalpkdktVcVVncTN5NnhCdlEKTnp3SWRmMGtDOGE0NW0wcXBLOENnZ0VCQUx0ZHpmMjBtMFdiMGJaS3h4WEgvUzZSYkJFSjhudC9wVTMxSk8xdgo2WG53czlETW1DV1U5dGwwYTlMellkbmtEU3J6Zmhac1VJYnVUcGZQci80Q014Vmt4d3dHV2FoQjRaVWtjcFdCCkdKdUIxM24xZ0QxbHgvRGVVRVlXenRKTFJjaFQrUlhOMUJYRDdOcjJvM3kwQnJuYmMrelgrb0RSTVhWL1VjQzQKV1FNNmlCdVJTZXVTanUwUzZsTVBKYURmRVlMNno0WFptY2F6anNZeDdVQk1EYUhFVldqa1dhZjVUOVlBMHE2YgpDVW9XRjZsV1k1eHl1K0k2SGlUSnM1UzBHcUdJTWs1eFlxRVdpTVltWjBKMnRQblJUMGNRNk1uSDdNSEJ3RXRHCkdYU0p6T2ZWUkMrNXlneFo5ZzByTWtzOElvb0hCeW9IVVpNSFFXVllOU3ZDMEk4Q2dnRUJBTXRpTUhMV0JhbDEKVVNVdStHUi9RK0tiS3oyZzFkT3pZcHJVa1gyODI0WTVMaDRaWGZJQXdOM3ZONXJhSU5tUElOcTI1MGY4aVlXagpqVUgxUUJ0dUJNbG5LVmJsNGdEQ1ZlcTNjSEt3R0xjcmR3eG1wTUpIMW1ERmdsc283clF1VU1EeVZ3YTBVUkhlCkhEcHRubHdPZTFtUHZCbUFBWWVNNDBsWTZSUHVMcmtGdkxORDJKanZGVEd1a25hRnR1Unc5ZDZ6UG14elVsWFMKWTQ5MnNxRzloRGpuWmh6VENMck9Ja1F4VTI2R0sxemN4SlpCa1p1WTE5a0txZm1tWHVZOVdjUGJXUllxQmFOSQoxM1R5aEJQS21OR0dTTWlIZnExdzVQazRDVmFNOHE3d1AyMFkxNUh5TWUrYUF1WVgzb1JSdVFsUnd3Ri9tMGNKCkxoUGtIa1A1Z0JNQ2dnRUFORDZKeTY1cWhWUlhlMzhLV0RaMWtHQ1lRNEFFanc4ZXBzZ3VUYzZneVpHbWNoZzYKYkhCSERJZDc4VXhRQXBPbVlFMlk0T08rNklEV2hWb3g5cC9pWXByQkxjY3ZoTTBwKzQ0NExSdmNJckJueHVmLwpwQjhYUzBDU0haa0tmblRpdG1ORDF5S1hlcUl4RHpVcWpRRWR4d0U4SjlScFV6WUJsb096NWdzQk52ZEJNSDZvCm4va3p4VU02OTRJSHVmMjVRazV4UXg5VDA2WUpyNVlJVTU5aFJiUWJKSzVYbVpEWkJCRWlyZkVvKy9HQkU0UzEKTGRDSU55S0JlVHlNeUhBWDVPYTNNRXhKZGlWMGFkd1hldDdpdzYzcmJ5TjE1WjNMbEpOVDdTbFV1N3dZMktRTQo2VW5pM3VMT3l3azZjdVFIdFhrVU5GSHFHeGN3MHZOdmtBNDRYUUtDQVFBeWx6UVIvS2JmNWl6UElRWHNpYk9yCk5Jbm5CSkRyM2gxVEFqbEdtNm5IazRXak94QWhXSXFoS2hZYzBOR0hESkZSbGxtbGtHM3M3aWYvRmpCaUlsWFMKZTNUUEJ0UFcrSUJDcUdxeVBKZUpTS2lPVHlJQXFibnJ6SFdHazRIOUUrQkdmb0dqUzBzM05KYTArZnVBVHFIawpQMXE4eFJpY1RURmtWMWR5Kzdabms4UENtOGZQRXZta3FCWUtvV3hER3M0dUhVd1QwZ1BURVVodXNVbng3YUJzClB6TXBURjFKaW1qL3FYMWxhcjV5bFAvWm1Hbk4ySkVvamZ5Rit4cDBEeUs3RTE3dm9uaFFpNWY4b1M2MWRabloKMUp0YU5rb09mcHlXV1pnSkRYcDRoWTVoWnVLSWpVUmFvMmJCTVlMS1MwSEp6YXJDUHFtelc5YzRYM0FmM0hvOQpBb0lCQURQVXJjcUpoY240QlRhcG8wbUJrS0Z3d3F5VEIwdS9adkJQblFZUTRKWWV0NzFUSXViSjJ3S3BCUmtJCjRUZ3pRUWd1YUdvV1FlSXJ5RTN6Um5peDVRRWQyRUtCTEVpUEZGVTVWbWEyS1p4bkhOMW5PMTByYVE5Mk5veFQKSEpjYXRCY1RqRGZmRnNES1JuTnhSdVRjaDJ0b0tidFZoNVRFcHdsR01WdWNFTjFtM2UvR0pIdkhOT0tQYUh6aAorRVh6VkhRMU1jQTZqazFGNzN1ajZ1RTIrZEoxazhnekFnYmhFSFZIRDdodVY0c2J1SlU2UEFZZUdkZ1Fudm9SCnl2cUc5Q1VVSFF0TTNyeVBCamhtMXh4K2dFNTJGb0xCNlhJSS9jcVNBMEQ2OS81aGovVURadU1xQ2hRZU13R1oKR0Q1RWdZQWFuY3lDNzNhTTdmZkhiM1lWUjNJPQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==
+kind: Secret
+metadata:
+  name: webhook-server-cert
+  namespace: contrail-deploy
+type: kubernetes.io/tls
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-system
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-service
+  namespace: contrail-deploy
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 29443
+  selector:
+    app: contrail-k8s-deployer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    secret: ""
+  name: contrail-k8s-deployer
+  namespace: contrail-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contrail-k8s-deployer
+  template:
+    metadata:
+      labels:
+        app: contrail-k8s-deployer
+    spec:
+      containers:
+      - command:
+        - /manager
+        - --metrics-addr
+        - 127.0.0.1:8081
+        - -central-cluster-config-path
+        - /etc/config/central/kubeconfig
+        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-deployer:23.3.0.98
+        name: contrail-k8s-deployer
+        volumeMounts:
+        - mountPath: /etc/config/central
+          name: kubeconfig
+          readOnly: true
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      hostNetwork: true
+      initContainers:
+      - command:
+        - kubectl
+        - apply
+        - --server-side=true
+        - -k
+        - /distributed-crd
+        image: enterprise-hub.juniper.net/contrail-container-internal/contrail-k8s-distributed-crdloader:23.3.0.98
+        name: contrail-k8s-distributed-crdloader
+      priorityClassName: system-cluster-critical
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: contrail-deploy-serviceaccount
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - name: kubeconfig
+        secret:
+          items:
+          - key: kubeconfig
+            path: kubeconfig
+          secretName: central-kubeconfig
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert

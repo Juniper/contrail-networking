@@ -1,0 +1,173 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  creationTimestamp: null
+  name: metricsconfigs.telemetry.juniper.net
+spec:
+  group: telemetry.juniper.net
+  names:
+    kind: MetricsConfig
+    listKind: MetricsConfigList
+    plural: metricsconfigs
+    singular: metricsconfig
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: MetricsConfig is the Schema for the metricsconfigs API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MetricsConfigSpec defines the desired state of MetricsConfig
+            properties:
+              receivers:
+                description: Receivers configuration for metrics-collector.
+                items:
+                  properties:
+                    enable_tls:
+                      description: EnableTLS flag defines if tls in enabled for receiver.
+                      type: boolean
+                    encoding:
+                      default: json
+                      description: Encoding defines how the messages are encoded before
+                        sending to receiver.
+                      type: string
+                    metrics:
+                      description: Metrics that receivers are interested in.
+                      items:
+                        type: string
+                      type: array
+                    port:
+                      description: Port is the receiver port where metrics will be
+                        sent over.
+                      type: integer
+                    serviceName:
+                      description: ServiceName defines receiver address.
+                      type: string
+                    tls_cert_path:
+                      description: TLSCertPath defines the additional CA certificate
+                        path for TLS
+                      items:
+                        type: string
+                      type: array
+                    tls_insecure_mode:
+                      description: TLSInsecureMode to skip all verification of certificates
+                        or not.
+                      type: boolean
+                  required:
+                  - port
+                  - serviceName
+                  type: object
+                type: array
+              writeLocation:
+                description: WriteLocation defines the location of metrics-collector
+                  configuration configmap.
+                properties:
+                  key:
+                    default: config.yaml
+                    description: Key represents the data key in the configmap.
+                    type: string
+                  name:
+                    description: Name of the configmap
+                    type: string
+                  namespace:
+                    description: Namespace where configmap is to be created/updated.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - writeLocation
+            type: object
+          status:
+            description: MetricsConfigStatus defines the observed state of MetricsConfig
+            properties:
+              apiVersion:
+                description: 'APIVersion defines the versioned schema of this representation
+                  of an object. Servers should convert recognized schemas to the latest
+                  internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                type: string
+              conditions:
+                description: Conditions contains detail info and status result of
+                  transitions
+                items:
+                  description: Condition is Common Condition for LCM resources
+                  properties:
+                    lastTransitionTime:
+                      description: Last time the condition transitioned from one status
+                        to another.
+                      format: date-time
+                      type: string
+                    lastUpdateTime:
+                      description: The last time this condition was updated.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A human readable message indicating details about
+                        the transition.
+                      type: string
+                    name:
+                      description: Namespaced name of the key
+                      type: string
+                    operation:
+                      description: Type of DB operation performed
+                      type: string
+                    reason:
+                      description: The reason for the condition's last transition,
+                        machine-readable text in UpperCamelCase.
+                      type: string
+                    status:
+                      description: Status of the condition, one of True, False, Unknown
+                      type: string
+                    type:
+                      description: Type of deployment condition, indicates the Phase
+                        this Condition is reporting
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              kind:
+                description: 'Kind is a string value representing the REST resource
+                  this object represents. Servers may infer this from the endpoint
+                  the client submits requests to. Cannot be updated. In CamelCase.
+                  More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                type: string
+              metadata:
+                type: object
+              phase:
+                type: string
+              status:
+                type: string
+            required:
+            - phase
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

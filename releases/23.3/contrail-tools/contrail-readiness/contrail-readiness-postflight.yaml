@@ -1,0 +1,136 @@
+apiVersion: checks.contrail.juniper.net/v1alpha1
+kind: ContrailReadiness
+metadata:
+  name: postflight
+spec:
+  manifestConfigMapName: deployer-yaml
+  tasks:
+    - name: contrailresources
+      allowFailure: false
+      atomicTask: true
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      taskPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: contrailresources-check
+            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            imagePullPolicy: Always
+            command: ["/contrailresources"]
+            env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: ping
+      allowFailure: false
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      taskPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: ping-check
+            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            imagePullPolicy: Always
+            command: ["/ping"]
+            env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: tcp
+      allowFailure: false
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      taskPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: tcp-check
+            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            imagePullPolicy: Always
+            command: ["/tcp"]
+            env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: udp
+      allowFailure: false
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      taskPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: udp-check
+            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            imagePullPolicy: Always
+            command: ["/udp"]
+            env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+    - name: podprorityclass
+      allowFailure: false
+      # Running this check on one node should be sufficient
+      # Set a label that matches exactly one node to do so.
+      # Running on all nodes would work, but is redundant.
+      # nodeSelector:
+      #   matchLabels:
+      #     kubernetes.io/hostname: <master-node-hostname>
+      taskPodSpec:
+        serviceAccountName: contrail-readiness-serviceaccount
+        restartPolicy: Never
+        containers:
+          - name: podpriorityclass-check
+            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            imagePullPolicy: Always
+            command: ["/podpriorityclass"]
+            env:
+            - name: CONTRAIL_NAMESPACES
+              value: "contrail-deploy,contrail-system,contrail"
+        tolerations:
+          - key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
