@@ -18,7 +18,7 @@ spec:
         - /manager
         - --metrics-addr
         - 127.0.0.1:8081
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.98
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.181
         name: contrail-k8s-deployer
         volumeMounts:
         - mountPath: /tmp/k8s-webhook-server/serving-certs

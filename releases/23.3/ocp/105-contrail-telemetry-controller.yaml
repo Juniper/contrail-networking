@@ -22,8 +22,10 @@ spec:
         runAsGroup: 3000
         runAsNonRoot: true
         runAsUser: 1000
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
-      - name: contrail-scheduler
+      - name: contrail-telemetry-controller
         image: svl-artifactory.juniper.net/atom-docker/cn2/bazel-build/dev/contrail-telemetry-controller:latest
         command:
         - /contrail-telemetry-controller
