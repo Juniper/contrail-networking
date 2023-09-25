@@ -13,7 +13,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: kernel-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             imagePullPolicy: Always
             command: ["/kernel"]
         tolerations:
@@ -29,7 +29,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: ports-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             imagePullPolicy: Always
             command: ["/ports"]
         tolerations:
@@ -45,7 +45,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: images-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             imagePullPolicy: Always
             command: ["/images"]
         tolerations:
@@ -63,7 +63,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: dns-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             imagePullPolicy: Always
             securityContext:
               privileged: true
@@ -89,7 +89,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: resources-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             imagePullPolicy: Always
             command: ["/resources"]
         tolerations:
@@ -107,7 +107,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: ntp-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             securityContext:
               privileged: true
               runAsUser: 0
@@ -135,7 +135,7 @@ spec:
         restartPolicy: Never
         containers:
           - name: secureboot-check
-            image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-checks:R23.3-98
+            image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-checks:R23.3-98
             securityContext:
               privileged: true
               runAsUser: 0

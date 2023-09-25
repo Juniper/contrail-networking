@@ -65,7 +65,7 @@ spec:
           - /cc-command.sh
           - /readiness-cc
           - -test.coverprofile=/tmp/readiness-cover-$HOSTNAME=$(date +%s%N).out
-          image: enterprise-hub.juniper.net/contrail-container-internal/contrail-readiness-coverage:R23.3-98
+          image: enterprise-hub.juniper.net/contrail-container-prod/contrail-readiness-coverage:R23.3-98
           imagePullPolicy: Always
           name: contrail-readiness
           volumeMounts:

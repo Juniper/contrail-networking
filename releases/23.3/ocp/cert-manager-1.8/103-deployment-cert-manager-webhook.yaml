@@ -37,7 +37,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: cert-manager
-          image: "enterprise-hub.juniper.net/contrail-container-internal/cert-manager-webhook:v1.8.2"
+          image: "enterprise-hub.juniper.net/contrail-container-prod/cert-manager-webhook:v1.8.2"
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
