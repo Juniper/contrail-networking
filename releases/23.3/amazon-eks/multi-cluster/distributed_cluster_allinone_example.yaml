@@ -188,7 +188,7 @@ spec:
         - 127.0.0.1:8081
         - -central-cluster-config-path
         - /etc/config/central/kubeconfig
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.181
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.184
         name: contrail-k8s-deployer
         volumeMounts:
         - mountPath: /etc/config/central
@@ -205,7 +205,7 @@ spec:
         - --server-side=true
         - -k
         - /distributed-crd
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-distributed-crdloader:23.3.0.181
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-distributed-crdloader:23.3.0.184
         name: contrail-k8s-distributed-crdloader
       priorityClassName: system-cluster-critical
       securityContext:
@@ -242,7 +242,7 @@ data:
     spec:
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-cert-manager:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-cert-manager:23.3.0.184
           name: contrail-k8s-cert-generator
         - image: enterprise-hub.juniper.net/contrail-container-prod/cert-manager-controller:v1.8.2
           name: cert-manager
@@ -304,16 +304,16 @@ data:
       clusterName: multi-cluster
       common:
         containers:
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:23.3.0.184
           name: contrail-vrouter-agent
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.184
           name: contrail-watcher
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.184
           name: contrail-vrouter-telemetry-exporter
         initContainers:
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.184
           name: contrail-init
-        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:23.3.0.181
+        - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:23.3.0.184
           name: contrail-cni-init
       maxUnavailablePercentage: 100%
 kind: ConfigMap
@@ -336,7 +336,7 @@ spec:
         - /applier.sh
         - vrouters.dataplane.juniper.net
         - contrail-eks-cr.yaml
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-applier:23.3.0.181
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-applier:23.3.0.184
         name: applier
         volumeMounts:
         - mountPath: /tmp/contrail

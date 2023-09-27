@@ -197,7 +197,7 @@ spec:
         - 127.0.0.1:8081
         - -central-cluster-config-path
         - /etc/config/central/kubeconfig
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.181
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-deployer:23.3.0.184
         name: contrail-k8s-deployer
         volumeMounts:
         - mountPath: /etc/config/central
@@ -214,7 +214,7 @@ spec:
         - --server-side=true
         - -k
         - /distributed-crd
-        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-distributed-crdloader:23.3.0.181
+        image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-distributed-crdloader:23.3.0.184
         name: contrail-k8s-distributed-crdloader
       priorityClassName: system-cluster-critical
       securityContext:
