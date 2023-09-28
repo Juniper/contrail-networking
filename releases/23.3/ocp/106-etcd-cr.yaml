@@ -6,12 +6,12 @@ metadata:
 spec:
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-etcd:23.3.0.184
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-etcd:23.3.0.186
       name: contrail-etcd
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cert-init:23.3.0.184
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cert-init:23.3.0.186
       name: contrail-cert-init
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cert-init:23.3.0.184
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cert-init:23.3.0.186
       name: set-etcd-dir-owner
     serviceAccountName: contrail-system-serviceaccount
   serviceSpec:

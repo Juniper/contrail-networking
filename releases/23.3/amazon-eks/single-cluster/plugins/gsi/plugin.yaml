@@ -54,7 +54,7 @@ spec:
   awsRegion: ""
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin:23.3.0.184
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin:23.3.0.186
       name: contrail-gsi-plugin
     initContainers:
     - command:
@@ -62,7 +62,7 @@ spec:
       - apply
       - -k
       - /crd
-      image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin-crdloader:23.3.0.184
+      image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin-crdloader:23.3.0.186
       name: contrail-gsi-plugin-crdloader
     serviceAccountName: contrail-gsi-serviceaccount
   iamRoleARN: ""

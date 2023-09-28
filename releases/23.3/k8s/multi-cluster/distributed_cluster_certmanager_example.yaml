@@ -6,7 +6,7 @@ metadata:
 spec:
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-cert-manager:23.3.0.184
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-k8s-cert-manager:23.3.0.186
       name: contrail-k8s-cert-generator
     - image: enterprise-hub.juniper.net/contrail-container-prod/cert-manager-controller:v1.8.2
       name: cert-manager
