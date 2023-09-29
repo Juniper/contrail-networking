@@ -9,5 +9,5 @@ spec:
   sriov_link_tag: ""
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-apstra-plugin:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-apstra-plugin:23.3.0.180
       name: contrail-apstra-plugin

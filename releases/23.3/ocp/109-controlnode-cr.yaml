@@ -9,10 +9,10 @@ spec:
   sandeshSslEnable: true
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-control:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-control:23.3.0.180
       name: contrail-control
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.180
       name: contrail-control-telemetry-exporter
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.180
       name: contrail-init

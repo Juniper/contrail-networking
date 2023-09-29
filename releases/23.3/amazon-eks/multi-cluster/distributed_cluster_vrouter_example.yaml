@@ -15,16 +15,16 @@ spec:
   clusterName: multi-cluster
   common:
     containers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:23.3.0.180
       name: contrail-vrouter-agent
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.180
       name: contrail-watcher
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:23.3.0.180
       name: contrail-vrouter-telemetry-exporter
     initContainers:
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:23.3.0.180
       name: contrail-init
-    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:23.3.0.186
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:23.3.0.180
       name: contrail-cni-init
   maxUnavailablePercentage: 100%
 #
