@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: contrail-gsi
+---
+apiVersion: v1
+imagePullSecrets:
+- name: registrypullsecret
+kind: ServiceAccount
+metadata:
+  name: contrail-gsi-serviceaccount
+  namespace: contrail-gsi
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: contrail-gsi-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: contrail-gsi-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contrail-gsi-role
+subjects:
+- kind: ServiceAccount
+  name: contrail-gsi-serviceaccount
+  namespace: contrail-gsi
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: <base64-encoded-credential>
+kind: Secret
+metadata:
+  name: registrypullsecret
+  namespace: contrail-gsi
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: plugins.juniper.net/v1alpha1
+kind: GSIPlugin
+metadata:
+  name: contrail-gsi-plugin
+  namespace: contrail-gsi
+spec:
+  awsRegion: ""
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin:cn2.23.4.0.59
+      name: contrail-gsi-plugin
+    initContainers:
+    - command:
+      - kubectl
+      - apply
+      - -k
+      - /crd
+      image: enterprise-hub.juniper.net/contrail-container-prod/contrail-gsi-plugin-crdloader:cn2.23.4.0.59
+      name: contrail-gsi-plugin-crdloader
+    serviceAccountName: contrail-gsi-serviceaccount
+  iamRoleARN: ""
+  vpcID: ""
