@@ -1,0 +1,65 @@
+apiVersion: dataplane.juniper.net/v1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-dpdk-nodes
+  namespace: contrail
+spec:
+  agent:
+    default:
+      collectors:
+      - localhost:6700
+      xmppAuthEnable: true
+      httpServerPort: 18085
+    sandesh:
+      introspectSslEnable: true
+      sandeshSslEnable: true
+  agentModeType: dpdk
+  common:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: NotIn
+              values:
+              - ""
+            - key: node-role.kubernetes.io/control-plane
+              operator: NotIn
+              values:
+              - ""
+            - key: agent-mode
+              operator: In
+              values:
+              - dpdk
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:cn2.23.4.0.59
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-dpdk:cn2.23.4.0.59
+      name: contrail-vrouter-agent-dpdk
+      resources:
+        limits:
+          hugepages-1Gi: 6Gi
+        requests:
+          memory: 6Gi
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:cn2.23.4.0.59
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:cn2.23.4.0.59
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:cn2.23.4.0.59
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:cn2.23.4.0.59
+      name: contrail-cni-init
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-kernel-init-dpdk:cn2.23.4.0.59
+      name: contrail-vrouter-kernel-init-dpdk
+  dpdk:
+    cpuCoreMask: 2,3
+    dpdkCommandAdditionalArgs: --yield_option 0
+    dpdkCtrlThreadMask: 4,5
+    dpdkUioDriver: vfio-pci
+    hugePages: "3072"
+    hugePagesDir: /dev/hugepages
+    serviceCoreMask: 4,5
+  maxUnavailablePercentage: 100%
+  logPath: /var/log/cn2

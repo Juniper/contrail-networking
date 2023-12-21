@@ -1,0 +1,28 @@
+apiVersion: dataplane.juniper.net/v1
+kind: Vrouter
+metadata:
+  name: contrail-vrouter-masters
+  namespace: contrail
+spec:
+  agent:
+    default:
+      collectors:
+      - localhost:6700
+      xmppAuthEnable: true
+      httpServerPort: 18085
+    sandesh:
+      introspectSslEnable: true
+      sandeshSslEnable: true
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-vrouter-agent:cn2.23.4.0.59
+      name: contrail-vrouter-agent
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:cn2.23.4.0.59
+      name: contrail-watcher
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-telemetry-exporter:cn2.23.4.0.59
+      name: contrail-vrouter-telemetry-exporter
+    initContainers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-init:cn2.23.4.0.59
+      name: contrail-init
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-cni-init:cn2.23.4.0.59
+      name: contrail-cni-init

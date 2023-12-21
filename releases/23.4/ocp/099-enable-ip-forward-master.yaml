@@ -1,0 +1,18 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 99-cn2-enable-ip-forward-master
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+      - contents:
+          # net.ipv4.ip_forward = 1
+          source: data:text/plain;charset=utf-8;base64,bmV0LmlwdjQuaXBfZm9yd2FyZCA9IDEK
+        mode: 0644
+        path: /etc/sysctl.d/cn2-enable-ip-forward.conf
+

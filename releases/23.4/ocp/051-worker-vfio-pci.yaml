@@ -1,0 +1,24 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: dpdk
+  name: 51-worker-vfio-pci
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+        - contents:
+            compression: ""
+            source: data:,vfio-pci
+          mode: 420
+          overwrite: true
+          path: /etc/modules-load.d/vfio-pci.conf
+        - contents:
+            compression: ""
+            source: data:,options%20vfio%20enable_unsafe_noiommu_mode%3D1
+          mode: 420
+          overwrite: true
+          path: /etc/modprobe.d/vfio-noiommu.conf

@@ -1,0 +1,175 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  creationTimestamp: null
+  name: kubemanagerstatuses.configplane.juniper.net
+spec:
+  conversion:
+    strategy: Webhook
+    webhook:
+      clientConfig:
+        caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZiekNDQTFlZ0F3SUJBZ0lVYjltaUFBWWR2R3dNUDJDaDR1Y1VVaTNvdlJnd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0xqRXNNQ29HQTFVRUF3d2pkMlZpYUc5dmF5MXpaWEoyYVdObExtTnZiblJ5WVdsc0xXUmxjR3h2ZVM1egpkbU13SGhjTk1qTXdOVEU1TVRnMU9UUXlXaGNOTXpNd05URTJNVGcxT1RReVdqQXVNU3d3S2dZRFZRUUREQ04zClpXSm9iMjlyTFhObGNuWnBZMlV1WTI5dWRISmhhV3d0WkdWd2JHOTVMbk4yWXpDQ0FpSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0lQQURDQ0Fnb0NnZ0lCQUpUYlA3YXNZQitJcEZIbFRXd3ozeXdKODJsOHdNOSt2Q2E2MVkwWApVaTM5cjkwNEcvU01WaTk3ekhEcnprUkswVStHOFozbUF1NkJiTm5rWFZPOEREdDhnTks3RExhTXY2Nk1OYi9UCnR0a090WXBZcW9MaWdQYjFpbjh6NEt5V1V5UlBYT2ZLd0diYjUxNm5RbkllK1lSU0tXZE9xTU03dlJWL2l4bmEKRjdZZ1R4d0o4WU05TEw5M2YrR1dZd2RjSFY0K252bnIwc0V6SlVHRkM2bG05V1VmNHNNazNPNzljZXk3eWMzYQo1QkowL0VvbEN6dHY5NkRZYzJFcFZ1Z3kyendXTGhOMjFob2JNTlNyNWp1R1pMN1hFTVkrbWNQbDRkSkVocU1ICkd6bUJYZ0ZlU0ZaUDhXczJWeFZaWGwzSjd3dVZMV1FQalZseUxYVWJyRmFXem5nZEMzYWZSYmZrc3ArcGtXL1UKMEQvZXBrSG41THJHS1FZdXlIZmhhVFlUbzRsaklvWExHTkZWRkVnb2NVVE14UDhTVjRqbmVQdHlCenMzWXpaNwp0OTlLMjZFSURZcnlwNkZKMng0QUlUUUlDZzJLdStHblBleWJRc1hzMDA1N3FCRDhhRkZXOFExejY3VlBuQmlTCjh6N2J0UVF6Zkc3Ukh6VmJZaVJWaXZzaG5HY2FJOWdYVkVGNE50RHpITXFTU2VYRzMydTc5TFpXVGVoZ2ZVSVcKMzZ4V1k0MExzQ3FUZkQ4ZnArVTByWDN6MllDdi9sQkMxUHBFYTI4TjdEZUU0Z2VwUjEvY0g4WHg5enBYVk4xZgowUndramtNNUU5YTBHUFlxVTRYUm0rNHE3TU9ITmptRzY4WXkySDN6VlBEeDJwSTVmb0FOREVLY0VBdjhlNmZ2CjAvcWRBZ01CQUFHamdZUXdnWUV3SFFZRFZSME9CQllFRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1COEcKQTFVZEl3UVlNQmFBRk1MZmVhSXZTN0VsdTNZVWViMXdocGppKzBsME1BOEdBMVVkRXdFQi93UUZNQU1CQWY4dwpMZ1lEVlIwUkJDY3dKWUlqZDJWaWFHOXZheTF6WlhKMmFXTmxMbU52Ym5SeVlXbHNMV1JsY0d4dmVTNXpkbU13CkRRWUpLb1pJaHZjTkFRRUxCUUFEZ2dJQkFFRDAxckpoc0pqYXJ2VUJkQThTZ3FqcTlkelpRMDJuZndJbHVGbzAKVThmMmdsQlFmdHJuY1RyV2hUaHZGMmZYTTVqdnVaUFc1c1g2dGMrMVdPWm55aktSZTRxaTExNzFWM2I5WkZ5aQovWWw5OXY1K2ZzZWJSaXlEckROU1ZoRjBZdERQdmVHaVk2S3IyZG1yaHp0dzBhVWR3Nzg5a0E3WHIzOUhmenAyClBYbnh0TGNhNGNSYnpSVWNycyt4M0c3STJzVHRMTEkrQ2k2Mm4zOWxFQ1c3dGU4UXpEQkpMRXliRUN5d3pVMDEKOGplcGNWcWQ4K0tvQXB4cFRjeGE0di92MTB2bnFuTGMrcElJYVhFMjROL2pYL084OEhJdHQrQkJ5T0xpUkdHdApvRlNGc3JWRXJ1a0tvcDFVcWJIL1E0ajhyY0dOT0Y5L0hWc0NnV2M5SEk0d0grOXBqYkRwR3R1ZW1xSWU1Z0RFCmh6MmR6N1hvMEZ1emJUaGo2L2JmY3R3bU82TjRCZm1pMjdVbXlGR2MxOXBQVExBSk1ZbitPSDJxWGJVdUE0MGkKbFJzRE5tU2xkUlpScGdsdGMwb3oycmVjLytEeVB0aG9GSDF0aFdLU0hyNytHOFI1U2p3TXgxZjRUcldMVGplQQpodTFxaDZZWSsxT1pRbkJXOXh4V2QzNDl0eHJHT1E4ejdtdE4vY0I5UEV4cDZGUzJwdXNQUkZEQTZRbnJNaDZqCmxUVTZpTDdOZzRNTVR4YXFYYWVMY1d3TnBKWDhwanBjMlJRVS8wS1doN1BFUTN6anhuRTVWSEdJUk5nSXViRzEKVVprbG80ald6R1ZNU3d6UWMza1o3emtXeWJaNjcyMDV2UFRDMEdydzEyb0JMYTNLWGpVT0hjcERoU0g3NzFOdgpnWkVRCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+        service:
+          name: webhook-service
+          namespace: contrail-deploy
+          path: /convert
+      conversionReviewVersions:
+      - v1
+  group: configplane.juniper.net
+  names:
+    kind: KubemanagerStatus
+    listKind: KubemanagerStatusList
+    plural: kubemanagerstatuses
+    singular: kubemanagerstatus
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          conditions:
+            description: Conditions contains detail info and status result of transitions
+            items:
+              description: Condition is Common Condition for LCM resources
+              properties:
+                lastTransitionTime:
+                  description: Last time the condition transitioned from one status
+                    to another.
+                  format: date-time
+                  type: string
+                lastUpdateTime:
+                  description: The last time this condition was updated.
+                  format: date-time
+                  type: string
+                message:
+                  description: A human readable message indicating details about the
+                    transition.
+                  type: string
+                name:
+                  description: Namespaced name of the key
+                  type: string
+                operation:
+                  description: Type of DB operation performed
+                  type: string
+                reason:
+                  description: The reason for the condition's last transition, machine-readable
+                    text in UpperCamelCase.
+                  type: string
+                status:
+                  description: Status of the condition, one of True, False, Unknown
+                  type: string
+                type:
+                  description: Type of deployment condition, indicates the Phase this
+                    Condition is reporting
+                  type: string
+              required:
+              - status
+              - type
+              type: object
+            type: array
+          isolationEnabledTime:
+            description: IsolationEnabledTime contains the timestamp when the feature
+              was enabled
+            format: date-time
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          phase:
+            description: Phase indicates the current Phase the API server is operating
+              at
+            type: string
+          status:
+            type: string
+        required:
+        - phase
+        - status
+        type: object
+    served: true
+    storage: true
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          conditions:
+            description: Conditions contains detail info and status result of transitions
+            items:
+              description: Condition is Common Condition for LCM resources
+              properties:
+                lastTransitionTime:
+                  description: Last time the condition transitioned from one status
+                    to another.
+                  format: date-time
+                  type: string
+                lastUpdateTime:
+                  description: The last time this condition was updated.
+                  format: date-time
+                  type: string
+                message:
+                  description: A human readable message indicating details about the
+                    transition.
+                  type: string
+                name:
+                  description: Namespaced name of the key
+                  type: string
+                operation:
+                  description: Type of DB operation performed
+                  type: string
+                reason:
+                  description: The reason for the condition's last transition, machine-readable
+                    text in UpperCamelCase.
+                  type: string
+                status:
+                  description: Status of the condition, one of True, False, Unknown
+                  type: string
+                type:
+                  description: Type of deployment condition, indicates the Phase this
+                    Condition is reporting
+                  type: string
+              required:
+              - status
+              - type
+              type: object
+            type: array
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          phase:
+            description: Phase indicates the current Phase the API server is operating
+              at
+            type: string
+          status:
+            type: string
+        required:
+        - phase
+        - status
+        type: object
+    served: true
+    storage: false
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

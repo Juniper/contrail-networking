@@ -1,0 +1,13 @@
+apiVersion: plugins.juniper.net/v1alpha1
+kind: ApstraPlugin
+metadata:
+  name: contrail-apstra-plugin
+  namespace: contrail
+spec:
+  blueprint: ""
+  server_ip: ""
+  sriov_link_tag: ""
+  common:
+    containers:
+    - image: enterprise-hub.juniper.net/contrail-container-prod/contrail-apstra-plugin:cn2.23.4.0.59
+      name: contrail-apstra-plugin
